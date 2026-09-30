@@ -6,7 +6,7 @@ see how everyone else voted.
 
 Anyone can suggest new statements. They only go live once you approve them.
 
-**Live site:** _add the URL here after your first deploy — see [Deploying](#deploying)._
+**Play it:** <https://trumportoddler.t-miltzow.workers.dev>
 
 ---
 
@@ -296,7 +296,7 @@ To deploy later changes, just `npm run deploy` again.
 
 ### A custom domain
 
-In the Cloudflare dashboard: **Workers & Pages → trump-or-toddler → Settings →
+In the Cloudflare dashboard: **Workers & Pages → trumportoddler → Settings →
 Domains & Routes**. Free, and it works with domains registered elsewhere.
 
 ---
