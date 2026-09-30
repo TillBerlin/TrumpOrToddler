@@ -2,8 +2,9 @@ name = "trump-or-toddler"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "public"
 
-# The database id is filled in by `wrangler d1 create trump_or_toddler`.
-# See README.md -> "Deploying".
+# The database id, from the D1 page in the Cloudflare dashboard (or from
+# `wrangler d1 create trump_or_toddler`). Not a secret. For a Git-connected
+# Pages project this file is the source of truth for bindings.
 [[d1_databases]]
 binding = "DB"
 database_name = "trump_or_toddler"
