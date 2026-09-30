@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trump or Toddler</title>
+    <meta name="description" content="One statement. Two possible culprits. Decide, then see what everyone else thought." />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:title" content="Trump or Toddler" />
+    <meta property="og:description" content="One statement. Two possible culprits. Can you tell?" />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>%F0%9F%A7%B8</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1><a href="/">Trump or Toddler</a></h1>
+    </header>
+
+    <main>
+      <!-- Loading -->
+      <p id="loading" class="notice">Loading…</p>
+
+      <!-- The game -->
+      <div id="game" class="hidden">
+        <p id="statement" class="statement"></p>
+
+        <div id="choices" class="choices">
+          <button class="choice" type="button" data-choice="trump">Trump</button>
+          <button class="choice" type="button" data-choice="toddler">Toddler</button>
+        </div>
+
+        <p id="skip-line" class="skip"><button type="button" id="skip">Skip this one</button></p>
+
+        <!-- Revealed only after a vote. Skipping never opens this. -->
+        <div id="result" class="result hidden" aria-live="polite">
+          <div class="bar">
+            <span class="bar-trump" id="bar-trump"></span>
+            <span class="bar-toddler" id="bar-toddler"></span>
+          </div>
+          <div class="legend">
+            <span id="legend-trump">Trump <b id="pct-trump">50%</b></span>
+            <span id="legend-toddler"><b id="pct-toddler">50%</b> Toddler</span>
+          </div>
+          <p class="tally" id="tally"></p>
+          <p class="source-note hidden" id="source-note"></p>
+          <button class="next" type="button" id="next">Next</button>
+        </div>
+      </div>
+
+      <!-- Nothing left -->
+      <div id="done" class="notice hidden">
+        <strong>You've seen them all.</strong>
+        <p>That is everything currently approved. Got a better one?<br /><a href="/submit">Add a statement</a>.</p>
+      </div>
+
+      <!-- Something broke -->
+      <div id="failed" class="notice hidden">
+        <strong>That didn't work.</strong>
+        <p>Something went wrong loading the game. <a href="/">Try again</a>.</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <nav><a href="/submit">Add a statement</a></nav>
+      <p class="about">
+        A silly game. Satire — not affiliated with anyone. No accounts and no tracking: just a random
+        ID in your browser so you don't get the same statement twice.
+      </p>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

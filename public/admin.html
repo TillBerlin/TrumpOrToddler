@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin — Trump or Toddler</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>%F0%9F%A7%B8</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1><a href="/">Trump or Toddler</a></h1>
+    </header>
+
+    <main class="form-page admin">
+      <!-- Ask for the token -->
+      <form id="login">
+        <h2>Admin</h2>
+        <p class="lede">Enter the admin token for this deployment.</p>
+        <div class="field">
+          <label for="token">ADMIN_TOKEN</label>
+          <input type="password" id="token" autocomplete="current-password" />
+        </div>
+        <button type="submit">Open</button>
+      </form>
+
+      <!-- The moderation queue -->
+      <div id="panel" class="hidden">
+        <h2>Moderation</h2>
+        <p class="lede" id="summary"></p>
+
+        <h3>Waiting for review (<span id="pending-count">0</span>)</h3>
+        <div id="pending"></div>
+
+        <h3>Live (<span id="approved-count">0</span>)</h3>
+        <div id="approved"></div>
+
+        <h3>Hidden (<span id="hidden-count">0</span>)</h3>
+        <div id="hidden-list"></div>
+
+        <p style="margin-top: 2.5rem">
+          <button class="button" type="button" id="signout">Forget token</button>
+        </p>
+      </div>
+
+      <div id="message" class="message hidden" role="status"></div>
+    </main>
+
+    <footer class="site-footer">
+      <nav><a href="/">Back to the game</a></nav>
+    </footer>
+
+    <script type="module" src="/admin.js"></script>
+  </body>
+</html>

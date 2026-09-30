@@ -1,0 +1,10 @@
+name = "trump-or-toddler"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+
+# The database id is filled in by `wrangler d1 create trump_or_toddler`.
+# See README.md -> "Deploying".
+[[d1_databases]]
+binding = "DB"
+database_name = "trump_or_toddler"
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID"

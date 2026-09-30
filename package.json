@@ -1,0 +1,24 @@
+{
+  "name": "trump-or-toddler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A small web game: is this statement about Trump, or about a toddler?",
+  "scripts": {
+    "dev": "wrangler pages dev",
+    "db:init": "wrangler d1 execute trump_or_toddler --local --file=./schema.sql",
+    "db:init:remote": "wrangler d1 execute trump_or_toddler --remote --file=./schema.sql",
+    "seed": "node scripts/import-seed.mjs --local",
+    "seed:remote": "node scripts/import-seed.mjs --remote",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy": "wrangler pages deploy"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "wrangler": "^3.99.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

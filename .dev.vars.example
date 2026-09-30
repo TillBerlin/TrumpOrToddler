@@ -1,0 +1,3 @@
+# Copy this file to .dev.vars for local development. .dev.vars is git-ignored.
+ADMIN_TOKEN=local-dev-token
+RATE_SALT=any-random-string

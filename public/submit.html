@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add a statement — Trump or Toddler</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>%F0%9F%A7%B8</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1><a href="/">Trump or Toddler</a></h1>
+    </header>
+
+    <main class="form-page">
+      <h2>Add a statement</h2>
+      <p class="lede">
+        The good ones could honestly be either. If you have to explain it, it probably isn't one.
+      </p>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <label for="text">Statement</label>
+          <textarea id="text" name="text" rows="3" maxlength="120" required
+                    placeholder="Refuses to wear a coat, no matter how cold it is."></textarea>
+          <p class="hint"><span id="count">0</span>/120 characters</p>
+        </div>
+
+        <div class="field">
+          <label for="sourceNote">Source note <span style="font-weight: 400">(optional)</span></label>
+          <input type="text" id="sourceNote" name="sourceNote" maxlength="200"
+                 placeholder="A link or a bit of context, if it's based on something real" />
+          <p class="hint">Shown under the result. Leave it empty if the statement is just a joke.</p>
+        </div>
+
+        <button type="submit" id="submit">Send it in</button>
+      </form>
+
+      <div id="message" class="message hidden" role="status"></div>
+    </main>
+
+    <footer class="site-footer">
+      <nav><a href="/">Back to the game</a></nav>
+      <p class="about">
+        Submissions are read by a human before they go live, so nothing appears instantly.
+      </p>
+    </footer>
+
+    <script type="module" src="/submit.js"></script>
+  </body>
+</html>
