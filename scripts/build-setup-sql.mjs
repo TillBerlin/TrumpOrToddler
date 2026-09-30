@@ -7,6 +7,11 @@
  * installed locally. Run it again after editing seed/statements.json:
  *
  *   npm run build:setup-sql
+ *
+ * The output deliberately contains NO `--` comments. The dashboard console is a
+ * single-line input: a pasted file arrives with its newlines flattened, and a
+ * `--` would then comment out everything that follows it, leaving the request
+ * with no query at all. Explanations belong in README.md, not in this file.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -36,23 +41,26 @@ for (const entry of entries) {
   );
 }
 
-const output = [
-  '-- Trump or Toddler -- complete first-time setup.',
-  '--',
-  '-- GENERATED FILE. Edit schema.sql or seed/statements.json instead, then run',
-  '-- `npm run build:setup-sql`.',
-  '--',
-  '-- Paste all of this into the D1 console in the Cloudflare dashboard',
-  '-- (Storage & Databases -> D1 -> your database -> Console) and hit Execute.',
-  '-- Running it twice is safe: the tables are only created if missing, and',
-  '-- statements already there keep the votes they have collected.',
-  '',
-  readFileSync(join(root, 'schema.sql'), 'utf8').trim(),
-  '',
-  `-- ${inserts.length} starting statements, all approved.`,
-  ...inserts,
-  '',
-].join('\n');
+/**
+ * Strip `--` comments and blank lines from the schema, and put each statement
+ * on a single line, so the whole file still works when newlines are lost.
+ * Only the schema is treated this way: the INSERT lines are built from
+ * validated text, where a `--` can only ever appear inside a quoted string.
+ */
+function compactSchema(sql) {
+  return sql
+    .split('\n')
+    .map((line) => line.replace(/--.*$/, '').trim())
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .split(';')
+    .map((statement) => statement.trim())
+    .filter(Boolean)
+    .map((statement) => `${statement};`);
+}
+
+const output = [...compactSchema(readFileSync(join(root, 'schema.sql'), 'utf8')), ...inserts, ''].join('\n');
 
 writeFileSync(join(root, 'setup.sql'), output, 'utf8');
 console.log(`  setup.sql written: schema + ${inserts.length} statements`);

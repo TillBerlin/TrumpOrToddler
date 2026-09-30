@@ -188,6 +188,13 @@ That creates the tables and imports all the starting statements in one go.
 Running it a second time is harmless — statements already there keep their
 votes.
 
+`setup.sql` contains no `--` comments on purpose. The console is a single-line
+input, so a pasted file arrives with its newlines flattened; a `--` would then
+comment out everything after it and the request would reach the server with no
+query in it at all. For the same reason, every line in the file is one complete
+statement — so if a paste is ever rejected for length, you can split it at any
+line break and paste it in a few goes.
+
 **4. Publish the site**
 
 Go to **Workers & Pages → Create application → Pages → Connect to Git**. Sign in
