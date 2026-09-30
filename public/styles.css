@@ -125,25 +125,6 @@ main {
 .choice:active { transform: translateY(1px); }
 .choice[disabled] { cursor: default; opacity: 0.55; }
 
-.skip {
-  margin: 1.5rem 0 0;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.skip button {
-  appearance: none;
-  border: 0;
-  background: none;
-  padding: 0.25rem 0.5rem;
-  font: inherit;
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-
 /* ---------- the reveal ---------- */
 
 .result { margin-top: 0.5rem; }
@@ -210,21 +191,44 @@ main {
   overflow-wrap: anywhere;
 }
 
-.next {
+/* Rating and "next" are one tap. The row is centred and set well below the
+   answer buttons, so nobody taps their way through on muscle memory. */
+.rating {
+  margin-top: 2.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.rating-prompt {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.rating-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.rating-buttons button {
   appearance: none;
-  display: block;
-  width: 100%;
-  margin-top: 2rem;
-  padding: 1.05rem;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--bg);
+  min-width: 7rem;
+  padding: 0.9rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--fg);
   font: inherit;
   font-size: 1.05rem;
-  font-weight: 500;
   cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.08s ease;
 }
+
+.rating-buttons button:hover { border-color: var(--accent); }
+.rating-buttons button:active { transform: translateY(1px); }
+.rating-buttons button[disabled] { opacity: 0.5; cursor: default; }
 
 /* ---------- messages ---------- */
 
@@ -368,3 +372,4 @@ textarea {
 .site-footer nav { margin-bottom: 0.5rem; }
 .site-footer a { text-underline-offset: 3px; }
 .site-footer .about { margin: 0; max-width: 32rem; margin-inline: auto; }
+.site-footer .count { margin: 0.7rem 0 0; font-variant-numeric: tabular-nums; opacity: 0.75; }

@@ -30,9 +30,9 @@
           <button class="choice" type="button" data-choice="toddler">Toddler</button>
         </div>
 
-        <p id="skip-line" class="skip"><button type="button" id="skip">Skip this one</button></p>
-
-        <!-- Revealed only after a vote. Skipping never opens this. -->
+        <!-- There is deliberately no skip: the statements people feel torn about
+             are the good ones, and letting them off the hook loses exactly the
+             answers worth having. -->
         <div id="result" class="result hidden" aria-live="polite">
           <div class="bar">
             <span class="bar-trump" id="bar-trump"></span>
@@ -44,7 +44,17 @@
           </div>
           <p class="tally" id="tally"></p>
           <p class="source-note hidden" id="source-note"></p>
-          <button class="next" type="button" id="next">Next</button>
+
+          <!-- Rating and Next are the same tap. They sit well below where the
+               Trump/Toddler buttons were, so tapping the same spot twice does
+               not carry anyone through without reading. -->
+          <div class="rating">
+            <p class="rating-prompt">Was that a good one?</p>
+            <div class="rating-buttons">
+              <button type="button" data-rating="funny">hihi</button>
+              <button type="button" data-rating="meh">meh</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -67,6 +77,7 @@
         A silly game. Satire — not affiliated with anyone. No accounts and no tracking: just a random
         ID in your browser so you don't get the same statement twice.
       </p>
+      <p class="count hidden" id="vote-count"></p>
     </footer>
 
     <script type="module" src="/app.js"></script>

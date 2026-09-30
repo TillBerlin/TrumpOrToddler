@@ -9,7 +9,7 @@ import { json, error } from '../lib/http.js';
 export async function onRequestGet({ env }) {
   try {
     const { results } = await env.DB.prepare(
-      `SELECT id, text, source_note, trump_votes, toddler_votes
+      `SELECT id, text, source_note, trump_votes, toddler_votes, funny_votes, meh_votes
          FROM statements
         WHERE status = 'approved'
         ORDER BY id`,

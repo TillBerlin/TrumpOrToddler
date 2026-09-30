@@ -8,7 +8,7 @@ export async function onRequestGet({ request, env }) {
 
   try {
     const { results } = await env.DB.prepare(
-      `SELECT id, text, source_note, status, trump_votes, toddler_votes, created_at
+      `SELECT id, text, source_note, status, trump_votes, toddler_votes, funny_votes, meh_votes, created_at
          FROM statements
         ORDER BY created_at DESC, id DESC`,
     ).all();

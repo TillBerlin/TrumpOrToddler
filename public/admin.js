@@ -1,4 +1,4 @@
-import { computeSplit } from '/lib/game.js';
+import { computeSplit, laughRate, laughs, shrugs } from '/lib/game.js';
 
 const TOKEN_KEY = 'tot.adminToken';
 
@@ -88,10 +88,19 @@ function row(statement, kind) {
     meta.textContent = `#${statement.id} · submitted ${statement.created_at}`;
   } else {
     const { total, trumpPct, toddlerPct } = computeSplit(statement);
+    const rated = laughs(statement) + shrugs(statement);
+    const rate = laughRate(statement);
+    // The laugh rate is what decides how often a statement is shown, so it is
+    // the number worth reading here -- an even Trump/Toddler split on its own
+    // can just mean the statement applies to neither.
+    const verdict =
+      rated === 0
+        ? 'not rated yet'
+        : `${Math.round(rate * 100)}% funny (${laughs(statement)} hihi / ${shrugs(statement)} meh)`;
     meta.textContent =
       total === 0
-        ? `#${statement.id} · no votes yet`
-        : `#${statement.id} · ${total} vote${total === 1 ? '' : 's'} · Trump ${trumpPct}% / Toddler ${toddlerPct}%`;
+        ? `#${statement.id} · no votes yet · ${verdict}`
+        : `#${statement.id} · ${total} vote${total === 1 ? '' : 's'} · Trump ${trumpPct}% / Toddler ${toddlerPct}% · ${verdict}`;
   }
   wrapper.append(meta);
 
@@ -180,10 +189,22 @@ async function refresh() {
   counters.hidden.textContent = String(data.hidden.length);
 
   const votes = data.approved.reduce((sum, s) => sum + s.trump_votes + s.toddler_votes, 0);
-  summary.textContent = `${data.approved.length} statements live, ${votes} votes cast.`;
+  const rated = data.approved.reduce((sum, s) => sum + laughs(s) + shrugs(s), 0);
+  const funny = data.approved.reduce((sum, s) => sum + laughs(s), 0);
+  const overall = rated === 0 ? '' : ` ${Math.round((100 * funny) / rated)}% of ratings were hihi.`;
+  summary.textContent = `${data.approved.length} statements live, ${votes} votes cast, ${rated} rated.${overall}`;
 
   fill(lists.pending, data.pending, 'pending', 'Nothing waiting. ');
-  fill(lists.approved, data.approved, 'approved', 'No approved statements yet — import the seed file.');
+  // Worst-rated first, so anything worth hiding is the first thing you see.
+  const byWorst = [...data.approved].sort((a, b) => {
+    const ra = laughRate(a);
+    const rb = laughRate(b);
+    if (ra === null && rb === null) return a.id - b.id;
+    if (ra === null) return 1;
+    if (rb === null) return -1;
+    return ra - rb;
+  });
+  fill(lists.approved, byWorst, 'approved', 'No approved statements yet — import the seed file.');
   fill(lists.hidden, data.hidden, 'hidden', 'Nothing hidden.');
 }
 

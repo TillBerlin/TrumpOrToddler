@@ -1,4 +1,4 @@
-import { computeSplit, pickNext } from '/lib/game.js';
+import { computeSplit, pickNext, SHOW_TOTAL_FROM, totalVotes } from '/lib/game.js';
 
 const PLAYER_KEY = 'tot.playerId';
 const SEEN_KEY = 'tot.seen';
@@ -10,8 +10,6 @@ const el = {
   failed: document.getElementById('failed'),
   statement: document.getElementById('statement'),
   choices: document.getElementById('choices'),
-  skipLine: document.getElementById('skip-line'),
-  skip: document.getElementById('skip'),
   result: document.getElementById('result'),
   barTrump: document.getElementById('bar-trump'),
   barToddler: document.getElementById('bar-toddler'),
@@ -21,7 +19,8 @@ const el = {
   legendToddler: document.getElementById('legend-toddler'),
   tally: document.getElementById('tally'),
   sourceNote: document.getElementById('source-note'),
-  next: document.getElementById('next'),
+  rating: document.querySelector('.rating-buttons'),
+  voteCount: document.getElementById('vote-count'),
 };
 
 /* ------------------------------------------------------------------ *
@@ -102,7 +101,15 @@ function show(which) {
 const me = playerId();
 let statements = [];
 let current = null;
+let shownAt = 0;
 let busy = false;
+
+function updateFooterCount() {
+  const total = statements.reduce((sum, s) => sum + totalVotes(s), 0);
+  if (total < SHOW_TOTAL_FROM) return; // a tiny number looks worse than none
+  el.voteCount.textContent = `${total.toLocaleString()} votes so far`;
+  el.voteCount.classList.remove('hidden');
+}
 
 async function loadStatements() {
   const response = await fetch('/api/statements', { headers: { Accept: 'application/json' } });
@@ -125,7 +132,6 @@ function showNext() {
   el.result.classList.add('hidden');
   el.sourceNote.classList.add('hidden');
   el.choices.classList.remove('hidden');
-  el.skipLine.classList.remove('hidden');
   el.barTrump.style.width = '50%';
   el.barToddler.style.width = '50%';
   el.pctTrump.textContent = '50%';
@@ -133,8 +139,10 @@ function showNext() {
   el.legendTrump.classList.remove('picked');
   el.legendToddler.classList.remove('picked');
   for (const button of el.choices.querySelectorAll('button')) button.disabled = false;
+  for (const button of el.rating.querySelectorAll('button')) button.disabled = false;
 
   show('game');
+  shownAt = performance.now();
 }
 
 function reveal(counts, choice, sourceNote) {
@@ -145,7 +153,7 @@ function reveal(counts, choice, sourceNote) {
 
   const picked = choice === 'trump' ? 'Trump' : 'Toddler';
   const votes = total === 1 ? '1 vote so far' : `${total} votes so far`;
-  el.tally.textContent = `You said ${picked} \u00b7 ${votes}`;
+  el.tally.textContent = `You said ${picked} · ${votes}`;
 
   el.legendTrump.classList.toggle('picked', choice === 'trump');
   el.legendToddler.classList.toggle('picked', choice === 'toddler');
@@ -156,7 +164,6 @@ function reveal(counts, choice, sourceNote) {
   }
 
   el.choices.classList.add('hidden');
-  el.skipLine.classList.add('hidden');
   el.result.classList.remove('hidden');
 
   // The bar is rendered at 50/50 first, then slides to the real split, so the
@@ -175,11 +182,13 @@ async function vote(choice) {
   for (const button of el.choices.querySelectorAll('button')) button.disabled = true;
 
   const statement = current;
+  const decisionMs = Math.round(performance.now() - shownAt);
+
   try {
     const response = await fetch('/api/vote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ statementId: statement.id, playerId: me, choice }),
+      body: JSON.stringify({ statementId: statement.id, playerId: me, choice, decisionMs }),
     });
 
     if (!response.ok) throw new Error(`vote: ${response.status}`);
@@ -191,23 +200,41 @@ async function vote(choice) {
 
     markSeen(statement.id);
     reveal(data, choice, data.source_note ?? statement.source_note);
+    updateFooterCount();
   } catch {
     // Let them try again rather than losing the statement.
-    el.tally.textContent = '';
     for (const button of el.choices.querySelectorAll('button')) button.disabled = false;
-    el.statement.textContent = statement.text;
     alert("Couldn't record that vote. Check your connection and try again.");
   } finally {
     busy = false;
   }
 }
 
-/* Skipping hides the statement for good but never shows the split -- that is
-   the whole point of not having a "reveal without voting" button. */
-function skip() {
+/* Rating and "next" are the same tap: whichever button they press records the
+   rating and moves on. */
+async function rate(rating) {
   if (busy || !current) return;
-  markSeen(current.id);
-  showNext();
+  busy = true;
+  for (const button of el.rating.querySelectorAll('button')) button.disabled = true;
+
+  const statement = current;
+  try {
+    const response = await fetch('/api/rate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ statementId: statement.id, playerId: me, rating }),
+    });
+    if (response.ok && (await response.json()).counted) {
+      // Keep the local counts in step, so the next pick samples fresh beliefs.
+      if (rating === 'funny') statement.funny_votes = (statement.funny_votes ?? 0) + 1;
+      else statement.meh_votes = (statement.meh_votes ?? 0) + 1;
+    }
+  } catch {
+    // A lost rating is not worth stranding someone mid-game over.
+  } finally {
+    busy = false;
+    showNext();
+  }
 }
 
 el.choices.addEventListener('click', (event) => {
@@ -215,10 +242,15 @@ el.choices.addEventListener('click', (event) => {
   if (button) vote(button.dataset.choice);
 });
 
-el.skip.addEventListener('click', skip);
-el.next.addEventListener('click', showNext);
+el.rating.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-rating]');
+  if (button) rate(button.dataset.rating);
+});
 
 loadSeen();
 loadStatements()
-  .then(showNext)
+  .then(() => {
+    updateFooterCount();
+    showNext();
+  })
   .catch(() => show('failed'));

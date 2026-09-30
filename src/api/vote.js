@@ -1,15 +1,31 @@
 import { json, error, readJson } from '../lib/http.js';
 import { clientIp, consume, hashIp } from '../lib/ratelimit.js';
+import { MIN_DECISION_MS } from '../../public/lib/game.js';
 
 const VOTES_PER_HOUR = 200;
 const HOUR = 60 * 60 * 1000;
 const PLAYER_ID_PATTERN = /^[A-Za-z0-9_-]{8,64}$/;
+
+/**
+ * Whether this answer came fast enough to have been read.
+ *
+ * The timing comes from the player's own browser, so it is a hygiene filter
+ * against genuine click-through rather than a defence against someone
+ * determined -- they could send any number they liked. A missing value counts,
+ * so a stale cached script does not silently stop recording votes.
+ */
+function wasConsidered(decisionMs) {
+  if (decisionMs === null || decisionMs === undefined) return true;
+  const ms = Number(decisionMs);
+  return !Number.isFinite(ms) || ms >= MIN_DECISION_MS;
+}
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
   const statementId = Number(body.statementId);
   const playerId = typeof body.playerId === 'string' ? body.playerId : '';
   const choice = body.choice === 'trump' || body.choice === 'toddler' ? body.choice : null;
+  const decisionMs = Number.isFinite(Number(body.decisionMs)) ? Math.round(Number(body.decisionMs)) : null;
 
   if (!Number.isInteger(statementId) || statementId <= 0) return error('Unknown statement.');
   if (!PLAYER_ID_PATTERN.test(playerId)) return error('Missing or malformed player id.');
@@ -30,15 +46,17 @@ export async function onRequestPost({ request, env }) {
   if (!statement) return error('That statement is not in play.', 404);
 
   // One vote per (statement, player). The unique primary key does the work:
-  // if the insert changes nothing, this player already voted and the counters
-  // stay where they are.
+  // if the insert changes nothing, this player already voted.
   const insert = await env.DB.prepare(
-    'INSERT OR IGNORE INTO votes (statement_id, player_id, choice) VALUES (?, ?, ?)',
+    'INSERT OR IGNORE INTO votes (statement_id, player_id, choice, decision_ms) VALUES (?, ?, ?, ?)',
   )
-    .bind(statementId, playerId, choice)
+    .bind(statementId, playerId, choice, decisionMs)
     .run();
 
-  const counted = (insert.meta?.changes ?? 0) === 1;
+  const isNew = (insert.meta?.changes ?? 0) === 1;
+  // A vote too fast to have been read still gets a row, so the statement is not
+  // shown again, but it does not move the numbers.
+  const counted = isNew && wasConsidered(decisionMs);
   if (counted) {
     const column = choice === 'trump' ? 'trump_votes' : 'toddler_votes';
     await env.DB.prepare(`UPDATE statements SET ${column} = ${column} + 1 WHERE id = ?`).bind(statementId).run();

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { onRequestPost as vote } from '../src/api/vote.js';
 import { onRequestGet as listStatements } from '../src/api/statements.js';
-import { createTestDb, addStatement, getStatement, postJson, makeEnv } from './helpers/d1.js';
+import { createTestDb, addStatement, getStatement, getVote, postJson, makeEnv } from './helpers/d1.js';
 
 const PLAYER_A = 'player-aaaaaaaa';
 const PLAYER_B = 'player-bbbbbbbb';
@@ -112,6 +112,65 @@ describe('vote validation', () => {
   it('will not accept votes on a hidden statement', async () => {
     const id = addStatement(db, { text: 'Taken out of play.', status: 'hidden' });
     expect((await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump' })).status).toBe(404);
+  });
+});
+
+describe('answers that came too fast to be real', () => {
+  it('does not count a vote cast quicker than anyone could read the statement', async () => {
+    const id = addStatement(db, { text: 'Refuses to wear a coat, no matter how cold it is.' });
+
+    const response = await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 120 });
+
+    expect(await response.json()).toMatchObject({ counted: false, trump_votes: 0, toddler_votes: 0 });
+    expect(getStatement(db, id)).toMatchObject({ trump_votes: 0, toddler_votes: 0 });
+  });
+
+  it('still records the row, so a click-through does not see it again', async () => {
+    const id = addStatement(db, { text: 'Has tantrums.' });
+    await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 50 });
+
+    expect(getVote(db, id, PLAYER_A)).toMatchObject({ choice: 'trump', decision_ms: 50 });
+  });
+
+  it('will not let someone re-vote properly after a discarded one', async () => {
+    const id = addStatement(db, { text: 'Throws food.' });
+    await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 50 });
+
+    const retry = await (await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 5000 })).json();
+
+    expect(retry.counted).toBe(false);
+    expect(getStatement(db, id)).toMatchObject({ trump_votes: 0 });
+  });
+
+  it('counts a vote from someone who actually stopped to think', async () => {
+    const id = addStatement(db, { text: 'Would like a parade.' });
+
+    const response = await castVote({ statementId: id, playerId: PLAYER_A, choice: 'toddler', decisionMs: 2400 });
+
+    expect(await response.json()).toMatchObject({ counted: true, toddler_votes: 1 });
+    expect(getVote(db, id, PLAYER_A).decision_ms).toBe(2400);
+  });
+
+  it('counts votes on the threshold itself', async () => {
+    const id = addStatement(db, { text: 'Wears diapers.' });
+    const response = await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 800 });
+    expect(await response.json()).toMatchObject({ counted: true });
+  });
+
+  it('counts a vote with no timing rather than silently dropping it', async () => {
+    // A stale cached script would send no timing. Better to trust it than to
+    // stop recording votes without anyone noticing.
+    const id = addStatement(db, { text: 'Needs help with buttons.' });
+    const response = await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump' });
+
+    expect(await response.json()).toMatchObject({ counted: true, trump_votes: 1 });
+    expect(getVote(db, id, PLAYER_A).decision_ms).toBeNull();
+  });
+
+  it('ignores a nonsense timing value instead of trusting it', async () => {
+    const id = addStatement(db, { text: 'Gets carried when tired.' });
+    const response = await castVote({ statementId: id, playerId: PLAYER_A, choice: 'trump', decisionMs: 'quick' });
+    expect(await response.json()).toMatchObject({ counted: true });
   });
 });
 

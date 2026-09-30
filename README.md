@@ -41,15 +41,44 @@ schema.sql         database tables
 tests/             the test suite
 ```
 
-Which statement you get next is decided **in your browser**, because that is
-the only side that knows what you have already seen — and that list never
-leaves your device. The rules live in `public/lib/game.js`:
+### Which statement comes next
 
-- statements you already voted on or skipped are never shown again;
-- otherwise the most evenly split statement wins, because a 50/50 statement is
-  a better one than a 95/5;
-- about one time in four, a statement with fewer than 20 votes jumps the queue,
-  so newly approved submissions get a chance to find their split.
+After the result, the player taps **hihi** or **meh** — that tap is also how
+they advance, so it costs nothing and everybody who keeps playing leaves a
+rating. There is deliberately no skip button: the statements people feel torn
+about are the good ones, and an escape hatch loses exactly the answers worth
+having.
+
+Those ratings, not the Trump/Toddler split, decide the running order. An even
+split is ambiguous — it can mean "torn between two good answers" or "applies to
+neither, so I flipped a coin" — and nothing in the vote data tells the two
+apart. Asking does.
+
+The picking itself is **Thompson sampling** (`public/lib/game.js`). Each
+statement carries a belief about its laugh rate rather than a score —
+`Beta(1 + hihi, 1 + meh)` — and to choose the next one we draw a random number
+from each unseen statement's belief and show whichever drew highest.
+
+Exploration falls out of the shape of those beliefs, so there is no rate to
+tune:
+
+- a statement nobody has rated has a flat belief, draws high often, and gets
+  its chance;
+- one with twenty shrugs and no laughs has a belief pinned near zero and
+  effectively stops appearing;
+- a good statement whose first few raters happened not to laugh still draws
+  high often enough to recover, which a plain sort by laugh rate would never
+  allow;
+- and because it is random, two people opening the link do not walk the same
+  path — which also keeps everybody's noisy first vote from landing on the same
+  statement.
+
+It runs **in the browser**, because that is the only side that knows what this
+player has already seen — and that list never leaves their device.
+
+Votes cast faster than 800ms are recorded but not counted: nobody reads a
+statement that quickly. The timing comes from the player's own browser, so it
+filters real click-through rather than a determined faker.
 
 ---
 
@@ -140,6 +169,19 @@ database it was already imported into — use **Hide** on the admin page for tha
 
 ---
 
+## Upgrading a database made before ratings existed
+
+Databases created before the hihi/meh feature need four new columns. In the
+Cloudflare dashboard: **Storage & Databases → D1 → your database → Console**,
+paste the contents of [`migrations/001-add-ratings.sql`](migrations/001-add-ratings.sql)
+and select **Execute**.
+
+Run it **once**. SQLite has no `ADD COLUMN IF NOT EXISTS`, so a second run
+fails with "duplicate column name" — which is harmless, just confusing. A fresh
+database made from `setup.sql` already has the columns and needs nothing.
+
+---
+
 ## Moderating
 
 Go to `/admin` and enter your `ADMIN_TOKEN`. There are no accounts; the token
@@ -149,7 +191,8 @@ make the live one long and random.
 - **Waiting for review** — every new submission lands here and is invisible to
   players. *Approve* puts it into play, *Edit then approve* lets you fix the
   wording first, *Reject* deletes it for good.
-- **Live** — everything currently in play, with its vote count and split. *Edit*
+- **Live** — everything currently in play, worst-rated first so anything worth
+  culling is the first thing you see, with its vote count, split and laugh rate. *Edit*
   changes the wording without touching the votes; *Hide* takes it out of play
   but keeps it (and its votes) so you can bring it back.
 - **Hidden** — statements you took down. *Show again* returns them to play.
@@ -304,14 +347,17 @@ Domains & Routes**. Free, and it works with domains registered elsewhere.
 ## What gets stored
 
 - **Statements** and their vote totals.
-- **Votes**, as `(statement id, anonymous player id, which side)`. The player
-  id is a random string generated in the browser and kept in `localStorage`. It
-  is not tied to anything about the person.
+- **Votes**, as `(statement id, anonymous player id, which side, how long they
+  took, hihi or meh)`. The player id is a random string generated in the browser
+  and kept in `localStorage`. It is not tied to anything about the person.
 - **Rate limiting**, as salted SHA-256 hashes of IP addresses with a timestamp.
   Raw addresses are never written down, and rows outside the current hour are
   deleted on every check.
 
-No accounts, no analytics, no cookies, no third-party requests.
+No accounts, no analytics, no cookies, no third-party requests. Nothing
+counts visitors either: the vote total in the footer is added up from the
+votes already in the database, so opening the page and leaving records
+nothing at all.
 
 ### How solid is the vote protection?
 
@@ -329,15 +375,24 @@ npm test          # once
 npm run test:watch
 ```
 
-The suite covers the two pieces of logic most likely to break quietly:
+The suite covers the logic most likely to break quietly:
 
 - **Vote counting** — that a vote lands on the right side, that one player
   cannot vote twice on the same statement (including by changing their mind),
   that pending and hidden statements refuse votes, and that rate limiting works
   per address and expires.
-- **Next-statement selection** — that seen statements never come back, that the
-  most evenly split one wins, that new statements get their share, and that a
-  player walks through every statement exactly once before the end screen.
+- **Decision timing** — that a sub-800ms answer is stored but not counted, that
+  it still stops the statement coming back, and that a missing or nonsensical
+  timing counts rather than silently dropping the vote.
+- **Ratings** — that hihi and meh land on the right counter, that a player
+  rates a statement once and only once, and that somebody who never voted on a
+  statement cannot rate it.
+- **The sampler** — that `sampleBeta` stays in [0, 1], centres on a/(a+b), and
+  narrows as counts grow.
+- **Next-statement selection** — that seen statements never come back, that a
+  statement people keep shrugging at all but disappears, that an unrated one
+  still gets a fair hearing, that an unlucky start is recoverable, and that new
+  arrivals do not all get handed the same statement first.
 
 The vote tests run against a real SQLite database using the same `schema.sql`
 the live site uses, so the `UNIQUE` constraints are genuinely exercised rather

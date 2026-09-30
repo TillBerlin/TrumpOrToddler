@@ -8,6 +8,7 @@
 
 import { onRequestGet as getStatements } from './api/statements.js';
 import { onRequestPost as postVote } from './api/vote.js';
+import { onRequestPost as postRate } from './api/rate.js';
 import { onRequestPost as postSubmit } from './api/submit.js';
 import { onRequestGet as getAdminStatements } from './api/admin/statements.js';
 import { onRequestPost as postAdminAction } from './api/admin/action.js';
@@ -16,6 +17,7 @@ import { error } from './lib/http.js';
 const routes = {
   '/api/statements': { GET: getStatements },
   '/api/vote': { POST: postVote },
+  '/api/rate': { POST: postRate },
   '/api/submit': { POST: postSubmit },
   '/api/admin/statements': { GET: getAdminStatements },
   '/api/admin/action': { POST: postAdminAction },

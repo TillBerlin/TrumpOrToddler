@@ -54,16 +54,23 @@ export function createTestDb() {
   };
 }
 
-export function addStatement(db, { text, status = 'approved', trump = 0, toddler = 0, sourceNote = null }) {
+export function addStatement(
+  db,
+  { text, status = 'approved', trump = 0, toddler = 0, funny = 0, meh = 0, sourceNote = null },
+) {
   const result = db.raw
     .prepare(
-      `INSERT INTO statements (text, norm_text, source_note, status, trump_votes, toddler_votes)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO statements (text, norm_text, source_note, status, trump_votes, toddler_votes, funny_votes, meh_votes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-        // Same normalisation the real endpoints use, so the UNIQUE constraint
+    // Same normalisation the real endpoints use, so the UNIQUE constraint
     // behaves in tests exactly as it does in production.
-    .run(text, normalizeText(text), sourceNote, status, trump, toddler);
+    .run(text, normalizeText(text), sourceNote, status, trump, toddler, funny, meh);
   return Number(result.lastInsertRowid);
+}
+
+export function getVote(db, statementId, playerId) {
+  return db.raw.prepare('SELECT * FROM votes WHERE statement_id = ? AND player_id = ?').get(statementId, playerId);
 }
 
 export function getStatement(db, id) {
