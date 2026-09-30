@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { onRequestPost as submit } from '../functions/api/submit.js';
+import { onRequestPost as submit } from '../src/api/submit.js';
 import { createTestDb, postJson, makeEnv } from './helpers/d1.js';
 
 let db;

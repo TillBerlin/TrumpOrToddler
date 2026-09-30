@@ -1,5 +1,5 @@
-import { json, error, readJson } from '../../src/lib/http.js';
-import { clientIp, consume, hashIp } from '../../src/lib/ratelimit.js';
+import { json, error, readJson } from '../lib/http.js';
+import { clientIp, consume, hashIp } from '../lib/ratelimit.js';
 
 const VOTES_PER_HOUR = 200;
 const HOUR = 60 * 60 * 1000;

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { onRequestGet as adminList } from '../functions/api/admin/statements.js';
-import { onRequestPost as adminAction } from '../functions/api/admin/action.js';
-import { onRequestGet as listStatements } from '../functions/api/statements.js';
+import { onRequestGet as adminList } from '../src/api/admin/statements.js';
+import { onRequestPost as adminAction } from '../src/api/admin/action.js';
+import { onRequestGet as listStatements } from '../src/api/statements.js';
 import { createTestDb, addStatement, getStatement, postJson, makeEnv } from './helpers/d1.js';
 
 const TOKEN = 'test-token';

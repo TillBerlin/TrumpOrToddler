@@ -16,9 +16,12 @@ Everything runs on Cloudflare's free tier, in one project:
 
 | Part | What it does |
 | --- | --- |
-| **Cloudflare Pages** | serves the three pages in `public/` |
-| **Pages Functions** (`functions/`) | the `/api/...` endpoints — voting, submissions, moderation |
+| **Static assets** (`public/`) | the three pages, served straight from Cloudflare's edge |
+| **A Worker** (`src/worker.js`) | the `/api/...` endpoints — voting, submissions, moderation |
 | **D1** | an SQLite database holding statements and votes |
+
+A request only reaches the Worker when it does not match a file in `public/`,
+which in practice means the `/api/...` endpoints.
 
 No build step, no framework, no dependencies in the browser. The pages are
 plain HTML, CSS and ES modules.
@@ -29,7 +32,8 @@ public/            what the browser gets
   submit.html        "add a statement" form
   admin.html         moderation queue
   lib/game.js        vote maths + which statement comes next (shared with tests)
-functions/api/     the server endpoints
+src/worker.js      routes /api/... to the handlers below
+src/api/           the server endpoints
 src/lib/           server-side helpers (sanitising, rate limiting, auth)
 seed/statements.json   the starting statements
 scripts/import-seed.mjs  loads that file into the database
@@ -197,23 +201,24 @@ line break and paste it in a few goes.
 
 **4. Publish the site**
 
-Go to **Workers & Pages → Create application → Pages → Connect to Git**. Sign in
-to GitHub, authorise Cloudflare for this repository, pick `TrumpOrToddler`, and
-select **Begin setup**.
+Go to **Workers & Pages → Create → Import a repository**. Sign in to GitHub,
+authorise Cloudflare for this repository, and pick `TrumpOrToddler`.
 
-On the build settings screen:
+On the build settings screen the defaults are what you want:
 
 | Field | Value |
 | --- | --- |
-| Framework preset | None |
-| Build command | *leave empty* |
-| Build output directory | `public` |
+| Build command | *leave empty* — there is nothing to build |
+| Deploy command | `npx wrangler deploy` (the default) |
 
-Select **Save and Deploy**. After a minute you get a URL like
-`https://trump-or-toddler.pages.dev` — the game is live and playable.
+Select **Deploy**. After a minute you get a URL ending in `.workers.dev` — the
+game is live and playable.
 
 You do not need to add the D1 binding by hand: `wrangler.toml` declares it, and
 for a Git-connected project that file is the source of truth for bindings.
+
+> If you already created the project and the build failed, you do not need to
+> start over — push a fix and select **Retry deployment** on the failed build.
 
 **5. Set your admin password**
 
@@ -222,8 +227,7 @@ In the new project: **Settings → Variables and Secrets → Add**. Choose type
 password for `/admin`, so make it a real one. Add a second secret called
 `RATE_SALT` with a different random value.
 
-Then go to **Deployments** and redeploy the latest one, so the new secrets are
-picked up. `/admin` works from then on.
+Then redeploy, so the new secrets are picked up. `/admin` works from then on.
 
 **Until `ADMIN_TOKEN` is set, `/admin` refuses every request** — it does not
 fall back to an empty or default password.
@@ -272,16 +276,15 @@ npm run seed:remote
 npm run deploy
 ```
 
-The first run asks you to create a Pages project — accept the suggested name
-(`trump-or-toddler`) and it publishes to `https://trump-or-toddler.pages.dev`.
-Put that URL at the top of this README and in the repository's **About** field,
-so the link is the first thing anyone sees.
+It publishes and prints the URL it deployed to. Put that URL at the top of this
+README and in the repository's **About** field, so the link is the first thing
+anyone sees.
 
 **5. Set the admin token on the live site**
 
 ```bash
-npx wrangler pages secret put ADMIN_TOKEN
-npx wrangler pages secret put RATE_SALT
+npx wrangler secret put ADMIN_TOKEN
+npx wrangler secret put RATE_SALT
 ```
 
 Each command asks you to paste a value. Use a long random string for both.
@@ -293,8 +296,8 @@ To deploy later changes, just `npm run deploy` again.
 
 ### A custom domain
 
-In the Cloudflare dashboard: **Workers & Pages → trump-or-toddler → Custom
-domains**. Free, and it works with domains registered elsewhere.
+In the Cloudflare dashboard: **Workers & Pages → trump-or-toddler → Settings →
+Domains & Routes**. Free, and it works with domains registered elsewhere.
 
 ---
 

@@ -1,10 +1,15 @@
 name = "trump-or-toddler"
+main = "src/worker.js"
 compatibility_date = "2025-01-01"
-pages_build_output_dir = "public"
+
+# Everything in public/ is served straight from Cloudflare's edge. A request
+# only reaches src/worker.js when it does not match a file -- which means the
+# /api/... endpoints.
+[assets]
+directory = "./public"
 
 # The database id, from the D1 page in the Cloudflare dashboard (or from
-# `wrangler d1 create trump_or_toddler`). Not a secret. For a Git-connected
-# Pages project this file is the source of truth for bindings.
+# `wrangler d1 create trump_or_toddler`). Not a secret.
 [[d1_databases]]
 binding = "DB"
 database_name = "trump_or_toddler"

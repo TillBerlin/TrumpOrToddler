@@ -1,6 +1,6 @@
-import { json, error, readJson } from '../../../src/lib/http.js';
-import { requireAdmin } from '../../../src/lib/admin.js';
-import { normalizeText, validateSubmission } from '../../../src/lib/text.js';
+import { json, error, readJson } from '../../lib/http.js';
+import { requireAdmin } from '../../lib/admin.js';
+import { normalizeText, validateSubmission } from '../../lib/text.js';
 
 const ACTIONS = new Set(['approve', 'reject', 'hide', 'unhide', 'update']);
 

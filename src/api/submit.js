@@ -1,6 +1,6 @@
-import { json, error, readJson } from '../../src/lib/http.js';
-import { clientIp, consume, hashIp } from '../../src/lib/ratelimit.js';
-import { validateSubmission } from '../../src/lib/text.js';
+import { json, error, readJson } from '../lib/http.js';
+import { clientIp, consume, hashIp } from '../lib/ratelimit.js';
+import { validateSubmission } from '../lib/text.js';
 
 const SUBMISSIONS_PER_HOUR = 5;
 const HOUR = 60 * 60 * 1000;

@@ -1,4 +1,4 @@
-import { json, error } from '../../src/lib/http.js';
+import { json, error } from '../lib/http.js';
 
 /**
  * Every approved statement with its current counts. The player's browser picks

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { onRequestPost as vote } from '../functions/api/vote.js';
-import { onRequestGet as listStatements } from '../functions/api/statements.js';
+import { onRequestPost as vote } from '../src/api/vote.js';
+import { onRequestGet as listStatements } from '../src/api/statements.js';
 import { createTestDb, addStatement, getStatement, postJson, makeEnv } from './helpers/d1.js';
 
 const PLAYER_A = 'player-aaaaaaaa';

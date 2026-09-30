@@ -1,5 +1,5 @@
-import { json, error } from '../../../src/lib/http.js';
-import { requireAdmin } from '../../../src/lib/admin.js';
+import { json, error } from '../../lib/http.js';
+import { requireAdmin } from '../../lib/admin.js';
 
 /** Everything the admin page needs, in one request. */
 export async function onRequestGet({ request, env }) {
