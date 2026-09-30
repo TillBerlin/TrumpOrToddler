@@ -7,4 +7,4 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "trump_or_toddler"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+database_id = "df12fc8c-6046-48c3-85f4-1ca388d5504a"
