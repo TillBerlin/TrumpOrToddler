@@ -51,6 +51,8 @@ leaves your device. The rules live in `public/lib/game.js`:
 
 ## Running it locally
 
+_Cannot install anything? Skip this — see [Deploying from a browser](#deploying-from-a-browser-nothing-installed)._
+
 You need [Node.js](https://nodejs.org/) 22 or newer — the tests use Node's
 built-in SQLite. Everything below works the same in Windows PowerShell, Command
 Prompt, macOS and Linux.
@@ -123,6 +125,12 @@ Re-running is safe. Duplicates are skipped (ignoring case and spacing), and
 statements already in the database keep the votes they have collected. Use
 `node scripts/import-seed.mjs --dry-run` to check a file without importing it.
 
+If you set the site up from a browser, regenerate the paste-ready SQL too:
+
+```bash
+npm run build:setup-sql   # rewrites setup.sql from schema.sql + seed/statements.json
+```
+
 Deleting a line from `seed/statements.json` does **not** remove it from a
 database it was already imported into — use **Hide** on the admin page for that.
 
@@ -146,8 +154,86 @@ The token is kept in `sessionStorage`, so closing the tab forgets it.
 
 ---
 
-## Deploying
+## Deploying from a browser (nothing installed)
 
+This is the whole setup with no terminal, no Node.js and no admin rights — a
+browser and a free [Cloudflare account](https://dash.cloudflare.com/sign-up) is
+all it takes. No credit card; this app sits comfortably inside the free tier.
+When Cloudflare offers to add a domain or pick a paid plan during signup, skip
+both.
+
+**1. Create the database**
+
+In the Cloudflare dashboard: **Storage & Databases → D1 SQL Database → Create
+Database**. Name it exactly `trump_or_toddler` and select **Create**.
+
+On the database's page, copy the **Database ID** (a long string of letters,
+numbers and dashes).
+
+**2. Put that id into `wrangler.toml`**
+
+On GitHub, open `wrangler.toml`, select the pencil icon to edit it, and replace
+`REPLACE_WITH_YOUR_DATABASE_ID` with the id you just copied. Commit the change.
+
+The database id is not a secret, so it is fine in the repository. This has to
+happen before step 4, because the build reads this file to find the database.
+
+**3. Create the tables and load the statements**
+
+Still on the database's page, open the **Console** tab. Copy the entire contents
+of [`setup.sql`](setup.sql) from this repository, paste it in, and select
+**Execute**.
+
+That creates the tables and imports all the starting statements in one go.
+Running it a second time is harmless — statements already there keep their
+votes.
+
+**4. Publish the site**
+
+Go to **Workers & Pages → Create application → Pages → Connect to Git**. Sign in
+to GitHub, authorise Cloudflare for this repository, pick `TrumpOrToddler`, and
+select **Begin setup**.
+
+On the build settings screen:
+
+| Field | Value |
+| --- | --- |
+| Framework preset | None |
+| Build command | *leave empty* |
+| Build output directory | `public` |
+
+Select **Save and Deploy**. After a minute you get a URL like
+`https://trump-or-toddler.pages.dev` — the game is live and playable.
+
+You do not need to add the D1 binding by hand: `wrangler.toml` declares it, and
+for a Git-connected project that file is the source of truth for bindings.
+
+**5. Set your admin password**
+
+In the new project: **Settings → Variables and Secrets → Add**. Choose type
+**Secret**, name it `ADMIN_TOKEN`, and set a long random value — this is the
+password for `/admin`, so make it a real one. Add a second secret called
+`RATE_SALT` with a different random value.
+
+Then go to **Deployments** and redeploy the latest one, so the new secrets are
+picked up. `/admin` works from then on.
+
+**Until `ADMIN_TOKEN` is set, `/admin` refuses every request** — it does not
+fall back to an empty or default password.
+
+**Afterwards**
+
+Every push to `main` redeploys automatically. Editing files through GitHub's web
+editor is enough to change the site — still no terminal needed.
+
+Put your live URL at the top of this README and in the repository's **About**
+field, so the link is the first thing anyone sees.
+
+---
+
+## Deploying from the command line
+
+If you do have a machine where you can install things, this is fewer steps.
 You need a free [Cloudflare account](https://dash.cloudflare.com/sign-up). No
 credit card, and this app sits comfortably inside the free tier.
 
