@@ -38,10 +38,32 @@ describe('rate limiting', () => {
   it('drops rows it no longer needs instead of keeping a log', async () => {
     const start = 1_000_000;
     await consume(db, 'vote:a', { limit: 5, windowMs: 1_000, now: start });
-    await consume(db, 'vote:a', { limit: 5, windowMs: 1_000, now: start + 5_000 });
+    await consume(db, 'vote:a', { limit: 5, windowMs: 1_000, now: start + 4_000_000 });
 
     const { n } = db.raw.prepare('SELECT COUNT(*) AS n FROM rate_events').get();
     expect(n).toBe(1);
+  });
+
+  it('also clears out someone who acted once and never came back', async () => {
+    const start = 1_000_000;
+    // One-time visitor. Nothing will ever check their bucket again.
+    await consume(db, 'vote:passer-by', { limit: 5, windowMs: 60_000, now: start });
+    expect(db.raw.prepare('SELECT COUNT(*) AS n FROM rate_events').get().n).toBe(1);
+
+    // Somebody else acts two hours later; the stale row goes with the sweep.
+    await consume(db, 'vote:regular', { limit: 5, windowMs: 60_000, now: start + 2 * 60 * 60 * 1000 });
+
+    const rows = db.raw.prepare('SELECT bucket FROM rate_events').all();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].bucket).toBe('vote:regular');
+  });
+
+  it('keeps rows that are still inside their window', async () => {
+    const start = 1_000_000;
+    await consume(db, 'vote:a', { limit: 5, windowMs: 60_000, now: start });
+    await consume(db, 'vote:b', { limit: 5, windowMs: 60_000, now: start + 30_000 });
+
+    expect(db.raw.prepare('SELECT COUNT(*) AS n FROM rate_events').get().n).toBe(2);
   });
 });
 

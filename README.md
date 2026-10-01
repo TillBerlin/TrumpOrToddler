@@ -351,8 +351,11 @@ Domains & Routes**. Free, and it works with domains registered elsewhere.
   took, hihi or meh)`. The player id is a random string generated in the browser
   and kept in `localStorage`. It is not tied to anything about the person.
 - **Rate limiting**, as salted SHA-256 hashes of IP addresses with a timestamp.
-  Raw addresses are never written down, and rows outside the current hour are
-  deleted on every check.
+  Raw addresses are never written down. Hashing alone would not be enough — there
+  are only about 4.3 billion IPv4 addresses, so an unsalted hash can be reversed
+  by working through all of them — which is what `RATE_SALT` is for. Rows older
+  than an hour are swept on the next write by anyone, so a one-time visitor's row
+  does not outlive its purpose.
 
 No accounts, no analytics, no cookies, no third-party requests. Nothing
 counts visitors either: the vote total in the footer is added up from the
@@ -362,9 +365,17 @@ nothing at all.
 ### How solid is the vote protection?
 
 Deliberately light. One vote per `(statement, player)` is enforced by a database
-constraint, and votes are capped at 200 per hour per IP address. Someone who
-clears their browser storage gets a fresh player id — that is fine. The point is
-to stop casual double-voting and scripted flooding, not to be unfalsifiable.
+constraint; that is what actually protects the numbers. On top of it, each IP
+address may cast 2,000 votes and 2,000 ratings per hour, and send 5 submissions.
+
+The vote and rating limits are set high on purpose. They are per IP, and a whole
+university, office or mobile carrier shares one — so a room full of people on
+the same Wi-Fi must not be able to lock each other out. Submissions stay at 5
+because that limit is about how much there is to moderate.
+
+Someone who clears their browser storage gets a fresh player id, and their votes
+count again. That is fine. The point is to stop casual double-voting and
+scripted flooding, not to be unfalsifiable.
 
 ---
 
@@ -381,6 +392,8 @@ The suite covers the logic most likely to break quietly:
   cannot vote twice on the same statement (including by changing their mind),
   that pending and hidden statements refuse votes, and that rate limiting works
   per address and expires.
+- **Rate limiting** — that limits apply per address, expire with their window,
+  and that expired rows are swept even for someone who never comes back.
 - **Decision timing** — that a sub-800ms answer is stored but not counted, that
   it still stops the statement coming back, and that a missing or nonsensical
   timing counts rather than silently dropping the vote.

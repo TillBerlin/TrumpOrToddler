@@ -1,7 +1,11 @@
 import { json, error, readJson } from '../lib/http.js';
 import { clientIp, consume, hashIp } from '../lib/ratelimit.js';
 
-const RATINGS_PER_HOUR = 200;
+// Per IP, and a whole university or office shares one. Set high enough
+// that a room full of people on the same Wi-Fi cannot lock each other
+// out; the one-per-player database constraint is what actually protects
+// the numbers.
+const RATINGS_PER_HOUR = 2000;
 const HOUR = 60 * 60 * 1000;
 const PLAYER_ID_PATTERN = /^[A-Za-z0-9_-]{8,64}$/;
 
