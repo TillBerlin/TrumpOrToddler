@@ -7,6 +7,11 @@ compatibility_date = "2025-01-01"
 # /api/... endpoints.
 [assets]
 directory = "./public"
+binding = "ASSETS"
+# Only the root runs the Worker first, so it can put the shared statement into
+# the link-preview tags. Everything else -- /submit, /admin, css, js -- is still
+# served straight from the edge without waking the Worker.
+run_worker_first = ["/"]
 
 # The database id, from the D1 page in the Cloudflare dashboard (or from
 # `wrangler d1 create trump_or_toddler`). Not a secret.

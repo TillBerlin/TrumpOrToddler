@@ -78,7 +78,15 @@ player has already seen — and that list never leaves their device.
 
 Two things override it. A link like `/?s=12` opens on that statement whatever
 the sampler thinks, because somebody was sent it on purpose; the pin applies
-once and then the normal order resumes. And **Start over** — quietly in the
+once and then the normal order resumes. That link also **previews with the
+statement in it**: pasted into a chat it reads *"Wears diapers."* rather than a
+generic title, which is the difference between a link people tap and one they
+scroll past. Preview bots do not run JavaScript, so the Worker rewrites the
+`og:` tags on the way out (`src/worker.js`). Only `/` runs the Worker first —
+everything else is still served straight from the edge — and the lookup is
+strictly best-effort: an unknown, unapproved or hidden id, or any error, falls
+back to the default tags. An unapproved statement can never leak its text that
+way. And **Start over** — quietly in the
 footer, and offered again on the end screen — issues a fresh player id and
 clears the seen list, which is what you want when a shared computer passes to
 the next person, or when somebody who finished wants another run.
@@ -409,8 +417,9 @@ The suite covers the logic most likely to break quietly:
   statement cannot rate it.
 - **The sampler** — that `sampleBeta` stays in [0, 1], centres on a/(a+b), and
   narrows as counts grow.
-- **Shared links** — that `?s=12` yields that id, and that a mangled one (`?s=`,
-  `?s=abc`, `?s=-1`) reads as absent so the link still opens the game.
+- **Shared links** — that `?s=12` yields that id, that a mangled one (`?s=`,
+  `?s=abc`, `?s=-1`) reads as absent so the link still opens the game, and that
+  the preview carries the statement without ever carrying the result.
 - **Next-statement selection** — that seen statements never come back, that a
   statement people keep shrugging at all but disappears, that an unrated one
   still gets a fair hearing, that an unlucky start is recoverable, and that new
