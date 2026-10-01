@@ -76,6 +76,13 @@ tune:
 It runs **in the browser**, because that is the only side that knows what this
 player has already seen — and that list never leaves their device.
 
+Two things override it. A link like `/?s=12` opens on that statement whatever
+the sampler thinks, because somebody was sent it on purpose; the pin applies
+once and then the normal order resumes. And **Start over** — quietly in the
+footer, and offered again on the end screen — issues a fresh player id and
+clears the seen list, which is what you want when a shared computer passes to
+the next person, or when somebody who finished wants another run.
+
 Votes cast faster than 800ms are recorded but not counted: nobody reads a
 statement that quickly. The timing comes from the player's own browser, so it
 filters real click-through rather than a determined faker.
@@ -402,6 +409,8 @@ The suite covers the logic most likely to break quietly:
   statement cannot rate it.
 - **The sampler** — that `sampleBeta` stays in [0, 1], centres on a/(a+b), and
   narrows as counts grow.
+- **Shared links** — that `?s=12` yields that id, and that a mangled one (`?s=`,
+  `?s=abc`, `?s=-1`) reads as absent so the link still opens the game.
 - **Next-statement selection** — that seen statements never come back, that a
   statement people keep shrugging at all but disappears, that an unrated one
   still gets a fair hearing, that an unlucky start is recoverable, and that new

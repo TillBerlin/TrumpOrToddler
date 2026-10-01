@@ -191,6 +191,30 @@ main {
   overflow-wrap: anywhere;
 }
 
+/* Quiet enough not to compete with the two answers, present enough to find
+   when somebody wants to send a statement to a friend. */
+.share {
+  margin: 1.4rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.share button,
+.link-button {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0.25rem 0.4rem;
+  font: inherit;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.share button:hover,
+.link-button:hover { color: var(--fg); }
+
 /* Rating and "next" are one tap. The row is centred and set well below the
    answer buttons, so nobody taps their way through on muscle memory. */
 .rating {
@@ -370,6 +394,7 @@ textarea {
 }
 
 .site-footer nav { margin-bottom: 0.5rem; }
+.site-footer .link-button { font-size: inherit; }
 .site-footer a { text-underline-offset: 3px; }
 .site-footer .about { margin: 0; max-width: 32rem; margin-inline: auto; }
 .site-footer .count { margin: 0.7rem 0 0; font-variant-numeric: tabular-nums; opacity: 0.75; }

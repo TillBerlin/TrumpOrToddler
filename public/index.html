@@ -45,6 +45,8 @@
           <p class="tally" id="tally"></p>
           <p class="source-note hidden" id="source-note"></p>
 
+          <p class="share"><button type="button" id="share">Send this one to someone</button></p>
+
           <!-- Rating and Next are the same tap. They sit well below where the
                Trump/Toddler buttons were, so tapping the same spot twice does
                not carry anyone through without reading. -->
@@ -62,6 +64,7 @@
       <div id="done" class="notice hidden">
         <strong>You've seen them all.</strong>
         <p>That is everything currently approved. Got a better one?<br /><a href="/submit">Add a statement</a>.</p>
+        <p><button type="button" class="button" id="restart-done">Start over</button></p>
       </div>
 
       <!-- Something broke -->
@@ -72,7 +75,11 @@
     </main>
 
     <footer class="site-footer">
-      <nav><a href="/submit">Add a statement</a></nav>
+      <nav>
+        <a href="/submit">Add a statement</a>
+        <!-- Mostly for a shared computer: whoever picks it up next starts clean. -->
+        <span aria-hidden="true"> · </span><button type="button" id="restart" class="link-button">Start over</button>
+      </nav>
       <p class="about">
         A silly game. Satire — not affiliated with anyone. No accounts and no tracking: just a random
         ID in your browser so you don't get the same statement twice.

@@ -1,4 +1,4 @@
-import { computeSplit, pickNext, SHOW_TOTAL_FROM, totalVotes } from '/lib/game.js';
+import { computeSplit, parseSharedId, pickNext, SHOW_TOTAL_FROM, totalVotes } from '/lib/game.js';
 
 const PLAYER_KEY = 'tot.playerId';
 const SEEN_KEY = 'tot.seen';
@@ -20,6 +20,9 @@ const el = {
   tally: document.getElementById('tally'),
   sourceNote: document.getElementById('source-note'),
   rating: document.querySelector('.rating-buttons'),
+  share: document.getElementById('share'),
+  restart: document.getElementById('restart'),
+  restartDone: document.getElementById('restart-done'),
   voteCount: document.getElementById('vote-count'),
 };
 
@@ -98,11 +101,62 @@ function show(which) {
  * The game
  * ------------------------------------------------------------------ */
 
-const me = playerId();
+let me = playerId();
 let statements = [];
 let current = null;
 let shownAt = 0;
 let busy = false;
+
+/* A link like /?s=12 opens on that statement, however the sampler would have
+   ranked it -- somebody was sent it on purpose. It applies once, then the
+   normal order takes over. */
+let pinned = parseSharedId(window.location.search);
+
+function forgetSharedId() {
+  try {
+    window.history.replaceState({}, '', window.location.pathname);
+  } catch {
+    /* older browsers just keep the query string; harmless */
+  }
+}
+
+/** Fresh identity and a clean slate -- for a shared computer, or a replay. */
+function startOver() {
+  seen = new Set();
+  try {
+    store?.removeItem(SEEN_KEY);
+    store?.removeItem(PLAYER_KEY);
+  } catch {
+    /* the in-memory reset below still applies */
+  }
+  me = playerId();
+  pinned = null;
+  showNext();
+}
+
+async function share() {
+  if (!current) return;
+  const url = `${window.location.origin}/?s=${current.id}`;
+  const text = `"${current.text}" — Trump or toddler?`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Trump or Toddler', text, url });
+      return;
+    } catch (err) {
+      // Dismissing the share sheet is not a failure; do not then also copy.
+      if (err?.name === 'AbortError') return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+    el.share.textContent = 'Link copied';
+  } catch {
+    // No clipboard (http, or an older browser): show it so it can be copied.
+    el.share.textContent = url;
+  }
+}
 
 function updateFooterCount() {
   const total = statements.reduce((sum, s) => sum + totalVotes(s), 0);
@@ -119,7 +173,13 @@ async function loadStatements() {
 }
 
 function showNext() {
-  current = pickNext(statements, seen);
+  current = null;
+  if (pinned !== null) {
+    current = statements.find((s) => s.id === pinned) ?? null;
+    pinned = null;
+    if (current) forgetSharedId();
+  }
+  if (!current) current = pickNext(statements, seen);
 
   if (!current) {
     show('done');
@@ -140,6 +200,7 @@ function showNext() {
   el.legendToddler.classList.remove('picked');
   for (const button of el.choices.querySelectorAll('button')) button.disabled = false;
   for (const button of el.rating.querySelectorAll('button')) button.disabled = false;
+  el.share.textContent = 'Send this one to someone';
 
   show('game');
   shownAt = performance.now();
@@ -246,6 +307,10 @@ el.rating.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-rating]');
   if (button) rate(button.dataset.rating);
 });
+
+el.share.addEventListener('click', share);
+el.restart.addEventListener('click', startOver);
+el.restartDone.addEventListener('click', startOver);
 
 loadSeen();
 loadStatements()

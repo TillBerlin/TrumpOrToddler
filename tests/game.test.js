@@ -4,6 +4,7 @@ import {
   laughRate,
   laughs,
   shrugs,
+  parseSharedId,
   pickNext,
   sampleBeta,
   totalVotes,
@@ -36,6 +37,26 @@ function pickShare(pool, id, runs = 4000, seed = 1) {
   for (let i = 0; i < runs; i += 1) if (pickNext(pool, [], rand).id === id) hits += 1;
   return hits / runs;
 }
+
+describe('parseSharedId', () => {
+  it('reads the statement id out of a shared link', () => {
+    expect(parseSharedId('?s=12')).toBe(12);
+    expect(parseSharedId('?other=1&s=7')).toBe(7);
+  });
+
+  it('is null when there is no shared id', () => {
+    expect(parseSharedId('')).toBeNull();
+    expect(parseSharedId('?other=1')).toBeNull();
+    expect(parseSharedId(undefined)).toBeNull();
+  });
+
+  it('treats a mangled id as absent rather than as an error', () => {
+    // A link that got cut in half should still open the game.
+    for (const search of ['?s=', '?s=abc', '?s=-1', '?s=0', '?s=1.5', '?s=NaN', '?s=99e99999']) {
+      expect(parseSharedId(search)).toBeNull();
+    }
+  });
+});
 
 describe('computeSplit', () => {
   it('sits at 50/50 before anyone has voted', () => {

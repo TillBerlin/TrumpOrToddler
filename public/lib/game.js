@@ -14,6 +14,22 @@ export const MIN_DECISION_MS = 800;
 export const SHOW_TOTAL_FROM = 50;
 
 /* ------------------------------------------------------------------ *
+ * Shared links
+ * ------------------------------------------------------------------ */
+
+/**
+ * The statement id out of a shared link's query string (`?s=12`), or null.
+ * Anything that is not a positive whole number is treated as absent rather
+ * than as an error -- a mangled link should still open the game.
+ */
+export function parseSharedId(search) {
+  const raw = new URLSearchParams(search ?? '').get('s');
+  if (raw === null || raw.trim() === '') return null;
+  const id = Number(raw);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+/* ------------------------------------------------------------------ *
  * The Trump/Toddler split
  * ------------------------------------------------------------------ */
 
