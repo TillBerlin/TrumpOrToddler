@@ -25,3 +25,7 @@ Peterprint.de version: `out/peterprint/`, 89 x 89 mm trim with exactly 3 mm
 bleed (95 x 95 mm pages), front/back alternating, no crop marks, saved as
 PDF/X-1a:2001 (FOGRA39 output intent, PDF 1.3). Same for the 25 mm token
 (31 x 31 mm page). Needs `pip install pikepdf`.
+
+Box: `python3 print/box.py` writes `out/box/`: `box-panels.pdf` (front, back,
+two sides, top, bottom for a 91 x 18 x 91 mm box, 3 mm bleed each, PDF/X-1a)
+and `box-net.pdf`, a tuck-end preview. The back has a QR code to the web game.
