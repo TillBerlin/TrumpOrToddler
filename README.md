@@ -319,7 +319,10 @@ fall back to an empty or default password.
 **Afterwards**
 
 Every push to `main` redeploys automatically. Editing files through GitHub's web
-editor is enough to change the site — still no terminal needed.
+editor is enough to change the site — still no terminal needed. This relies on
+the Worker's **Settings → Build → Production branch** being `main`; if it points
+at any other branch, merges to `main` quietly never go live. **Retry build**
+rebuilds the same old commit, so it will not pick up a merge either.
 
 Put your live URL at the top of this README and in the repository's **About**
 field, so the link is the first thing anyone sees.
