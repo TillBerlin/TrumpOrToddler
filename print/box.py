@@ -241,11 +241,71 @@ def net_pdf(path):
     c.save()
 
 
+# ---------------------------------------------------------------- Peterprint
+# Die-line from Peterprint (EngView export, tuck-end box 91 x 18 x 91 mm).
+# Panel edges below are read from that file, in points from its lower left
+# corner. The thumb notch is on the front panel, the lid hinges on the back.
+TEMPLATE = os.path.join(build.HERE, "box-template", "peterprint-EVF11103_91x18x91.pdf")
+TPL_W, TPL_H = 667.81, 399.08
+X_GLUE, X_BACK, X_LEFT, X_FRONT, X_RIGHT, X_END = 0.12, 51.15, 309.10, 360.12, 618.08, 667.68
+Y_BOTTOM, Y_BODY, Y_TOP, Y_LID, Y_TUCK = 0.12, 33.77, 291.24, 342.27, 398.96
+
+
+def _panel(c, x0, y0, x1, y1, draw, grow=(0, 0, 0, 0), rotate=False):
+    """Draw a panel clipped to its rectangle; grow = (left, bottom, right,
+    top) extends the clip into the bleed on cut edges."""
+    l, b, r, t = grow
+    c.saveState()
+    p = c.beginPath()
+    p.rect(x0 - l, y0 - b, (x1 - x0) + l + r, (y1 - y0) + b + t)
+    c.clipPath(p, stroke=0)
+    w, h = x1 - x0, y1 - y0
+    if rotate:
+        c.translate(x1, y1)
+        c.rotate(180)
+    else:
+        c.translate(x0, y0)
+    draw(c, w, h)
+    c.restoreState()
+
+
+def peterprint_pdf(path):
+    import pikepdf
+    tmp = path + ".art.pdf"
+    page_w, page_h = TPL_W + 2 * BLEED, TPL_H + 2 * BLEED
+    c = canvas.Canvas(tmp, pagesize=(page_w, page_h), initialFontName="Regular")
+    c.setTitle("Trump or Toddler - box 91 x 18 x 91")
+    c.setTrimBox((BLEED, BLEED, BLEED + TPL_W, BLEED + TPL_H))
+    c.setBleedBox((0, 0, page_w, page_h))
+    c.translate(BLEED, BLEED)
+    # flaps and everything outside the panels: plain paper colour
+    c.setFillColor(PAPER)
+    c.rect(-BLEED, -BLEED, page_w, page_h, stroke=0, fill=1)
+    B = BLEED
+    _panel(c, X_BACK, Y_BODY, X_LEFT, Y_TOP, back)
+    _panel(c, X_LEFT, Y_BODY, X_FRONT, Y_TOP, lambda c, w, h: side(c, w, h, True))
+    _panel(c, X_FRONT, Y_BODY, X_RIGHT, Y_TOP, front, grow=(0, 0, 0, B))
+    _panel(c, X_RIGHT, Y_BODY, X_END, Y_TOP, lambda c, w, h: side(c, w, h, False),
+           grow=(0, 0, B, 0))
+    # lid: turned round so it reads from the front once closed
+    _panel(c, X_BACK, Y_TOP, X_LEFT, Y_LID, end, grow=(B, 0, B, 0), rotate=True)
+    c.showPage()
+    c.save()
+
+    with pikepdf.open(tmp) as art, pikepdf.open(TEMPLATE) as tpl:
+        page = art.pages[0]
+        page.add_overlay(tpl.pages[0], pikepdf.Rectangle(BLEED, BLEED, BLEED + TPL_W, BLEED + TPL_H))
+        art.save(path)
+    os.remove(tmp)
+    build.make_pdfx1a(path)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     panels_pdf(os.path.join(OUT, "box-panels.pdf"))
     build.make_pdfx1a(os.path.join(OUT, "box-panels.pdf"))
     net_pdf(os.path.join(OUT, "box-net.pdf"))
+    peterprint_pdf(os.path.join(OUT, "box-peterprint.pdf"))
     print("box ->", OUT)
 
 

@@ -28,4 +28,6 @@ PDF/X-1a:2001 (FOGRA39 output intent, PDF 1.3). Same for the 25 mm token
 
 Box: `python3 print/box.py` writes `out/box/`: `box-panels.pdf` (front, back,
 two sides, top, bottom for a 91 x 18 x 91 mm box, 3 mm bleed each, PDF/X-1a)
-and `box-net.pdf`, a tuck-end preview. The back has a QR code to the web game.
+`box-net.pdf`, a tuck-end preview, and `box-peterprint.pdf`, the artwork laid
+onto Peterprint's die-line (`box-template/`, CUT and CREASE kept as spot lines).
+The back has a QR code to the web game.
