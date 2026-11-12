@@ -69,7 +69,6 @@ for name, file in [
     pdfmetrics.registerFont(TTFont(name, os.path.join(HERE, "fonts", file)))
 
 # ---------------------------------------------------------------- content
-SCORING = "tokens"  # "tokens" | "scoresheet"
 
 RULES_TITLE = "How to play"
 RULES_STEPS = [
@@ -77,7 +76,7 @@ RULES_STEPS = [
     ("Talk.", "Who would do that, Trump or a toddler? Talk it over."),
     ("Vote.", "Keep your voting card hidden. On “3, 2, 1” everyone shows "
               "Trump or Toddler at the same time."),
-    ("Score.", "Everyone who voted with the majority takes a toddler token. "
+    ("Score.", "Everyone who voted with the majority gets a point. "
                "A tie scores nothing."),
 ]
 RULES_SETUP = ("3 to 10 players. Everyone takes a voting card. Shuffle the "
@@ -85,8 +84,9 @@ RULES_SETUP = ("3 to 10 players. Everyone takes a voting card. Shuffle the "
 RULES_NEXT = "Then the stack moves one player to the left, and they read next."
 WIN_TITLE = "Winning"
 WIN_TEXT = [
-    "The first player to collect 10 toddler tokens wins. For a shorter game, "
-    "play to 5.",
+    "The first player to reach 10 points wins. For a shorter game, play to 5.",
+    "Keep score on paper, or hand out coins, sweets or anything else small "
+    "as tokens.",
     "Every card has a statement on both sides. When the stack runs out, "
     "turn it over and keep going.",
     "The blank side is yours: write your own statement on it.",
