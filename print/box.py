@@ -61,7 +61,8 @@ def front(c, w, h):
     c.drawCentredString(w / 2, h / 2 - 4.6, "or")
     c.setFont("Medium", 6.5)
     c.setFillColor(WHITE)
-    c.drawCentredString(w / 2, SAFE + 1 * mm, "The party game for 3 to 10 players")
+    c.setFont("SemiBold", 7.5)
+    c.drawCentredString(w / 2, SAFE + 1 * mm, "3–10 players   ·   18+   ·   10 min")
 
 
 def qr(c, x, y, size, url):
@@ -88,8 +89,9 @@ def back(c, w, h):
     y = build.paragraph(c, x, y, tw, [(blurb, "Regular")], 8.4, 10.8) - 1.5 * mm
     c.setFillColor(MUTED)
     n_cards = len(build.pair_up(build.load_statements()))
-    build.paragraph(c, x, y, tw, [(f"3–10 players  ·  {n_cards} statement cards, 10 voting "
-                                   "cards, 1 rules card", "Medium")], 6.4, 8.2)
+    y = build.paragraph(c, x, y, tw, [("3–10 players  ·  18+  ·  10 min", "SemiBold")], 6.8, 8.6)
+    build.paragraph(c, x, y + 0.6 * mm, tw, [(f"{n_cards} statement cards, 10 voting cards, 1 rules card",
+                                   "Medium")], 6.4, 8.2)
     # QR block, bottom left, with a two-colour band below
     band = 4.5 * mm
     c.setFillColor(TRUMP)
