@@ -344,6 +344,67 @@ def build_pdf(path, all_faces, marks):
     c.save()
 
 
+# ---------------------------------------------------------------- tokens
+# BoardGamesMaker.com 25 mm chipboard circles: 1/8 in bleed, and the art
+# stays a further 1/8 in inside the cut.
+TOKEN = 25 * mm
+TOKEN_BLEED = 0.125 * 72
+
+
+def draw_token(c, r):
+    """A toddler face in a teal circle, centred on (0, 0), radius r of the
+    cut line. The background runs past r so it bleeds."""
+    c.setFillColor(TODDLER)
+    c.circle(0, 0, r + TOKEN_BLEED, stroke=0, fill=1)
+    c.setStrokeColor(WHITE)
+    c.setFillColor(WHITE)
+    # face
+    fr = r * 0.52
+    c.setLineWidth(r * 0.07)
+    c.circle(0, -r * 0.05, fr, stroke=1, fill=0)
+    # ears
+    for sx in (-1, 1):
+        c.circle(sx * fr * 1.02, -r * 0.05, fr * 0.2, stroke=1, fill=0)
+    c.setFillColor(TODDLER)
+    c.circle(0, -r * 0.05, fr - r * 0.035, stroke=0, fill=1)
+    c.setFillColor(WHITE)
+    # eyes
+    for sx in (-1, 1):
+        c.circle(sx * fr * 0.36, fr * 0.08, fr * 0.1, stroke=0, fill=1)
+    # smile
+    c.setLineCap(1)
+    c.setLineWidth(r * 0.06)
+    c.arc(-fr * 0.38, -fr * 0.62, fr * 0.38, -fr * 0.02, startAng=200, extent=140)
+    # hair curl on top
+    p = c.beginPath()
+    top = -r * 0.05 + fr
+    p.moveTo(0, top)
+    p.curveTo(-fr * 0.05, top + fr * 0.35, fr * 0.38, top + fr * 0.42, fr * 0.3, top + fr * 0.12)
+    p.curveTo(fr * 0.24, top - fr * 0.02, fr * 0.06, top + fr * 0.02, fr * 0.1, top + fr * 0.16)
+    c.drawPath(p, stroke=1, fill=0)
+    c.setLineCap(0)
+
+
+def build_tokens(path):
+    """One page per token face (front and back the same), trim + bleed,
+    TrimBox set to the square around the circle."""
+    size = TOKEN + 2 * TOKEN_BLEED
+    c = canvas.Canvas(path, pagesize=(size, size), initialFontName="Regular")
+    c.setTitle("Trump or Toddler - toddler tokens")
+    c.setSubject("25 mm round tokens, 1/8 in bleed, CMYK")
+    for _ in range(2):
+        c.setTrimBox((TOKEN_BLEED, TOKEN_BLEED, TOKEN_BLEED + TOKEN, TOKEN_BLEED + TOKEN))
+        c.setBleedBox((0, 0, size, size))
+        c.saveState()
+        c.translate(size / 2, size / 2)
+        c.setFillColor(TODDLER)
+        c.rect(-size / 2, -size / 2, size, size, stroke=0, fill=1)
+        draw_token(c, TOKEN / 2)
+        c.restoreState()
+        c.showPage()
+    c.save()
+
+
 def write_text(statements):
     lines = [f"Trump or Toddler: all {len(statements)} statements", ""]
     for i, (a, b) in enumerate(pair_up(statements), 1):
@@ -388,6 +449,11 @@ def main():
     build_pdf(os.path.join(OUT, "trump-or-toddler-cards-cropmarks.pdf"), all_faces, marks=True)
     write_text(statements)
     export_png(os.path.join(OUT, "trump-or-toddler-cards.pdf"), all_faces)
+    build_tokens(os.path.join(OUT, "toddler-token.pdf"))
+    if shutil.which("pdftoppm"):
+        subprocess.run(["pdftoppm", "-r", "300", "-png", "-singlefile", "-f", "1", "-l", "1",
+                        os.path.join(OUT, "toddler-token.pdf"),
+                        os.path.join(OUT, "png", "toddler-token")], check=True)
     cards = len(all_faces) // 2
     print(f"{len(statements)} statements, {cards} cards, {len(all_faces)} pages -> {OUT}")
 
