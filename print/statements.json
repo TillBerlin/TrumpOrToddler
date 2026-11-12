@@ -1,0 +1,169 @@
+{
+  "_readme": "Approved statements from the live game (/api/statements), pulled 2026-11-12. Edit this file and run `python3 print/build.py` to rebuild the print files.",
+  "statements": [
+    {
+      "id": 1,
+      "text": "Refuses to wear a coat, no matter how cold it is."
+    },
+    {
+      "id": 2,
+      "text": "Insists on pressing the elevator button themselves."
+    },
+    {
+      "id": 3,
+      "text": "Gets upset when someone else's tower is taller."
+    },
+    {
+      "id": 4,
+      "text": "Everything is either “the best” or “a total disaster”."
+    },
+    {
+      "id": 5,
+      "text": "Needs a nap after lunch, but will deny being tired."
+    },
+    {
+      "id": 6,
+      "text": "Only eats food that is beige."
+    },
+    {
+      "id": 7,
+      "text": "Talks about themselves in the third person."
+    },
+    {
+      "id": 8,
+      "text": "Has to be the first one through the door."
+    },
+    {
+      "id": 9,
+      "text": "Announces the same achievement several times a day."
+    },
+    {
+      "id": 10,
+      "text": "Should not be left alone with a phone."
+    },
+    {
+      "id": 11,
+      "text": "Gets louder when asked to be quieter."
+    },
+    {
+      "id": 12,
+      "text": "Will not admit to knocking over the lamp."
+    },
+    {
+      "id": 13,
+      "text": "Deeply interested in large trucks."
+    },
+    {
+      "id": 14,
+      "text": "Would like a parade."
+    },
+    {
+      "id": 15,
+      "text": "Has a hairstyle that takes longer than the rest of getting dressed."
+    },
+    {
+      "id": 16,
+      "text": "Gives everyone they meet a nickname."
+    },
+    {
+      "id": 17,
+      "text": "Has fallen asleep somewhere they were supposed to be paying attention."
+    },
+    {
+      "id": 18,
+      "text": "Grabs things that belong to other people."
+    },
+    {
+      "id": 19,
+      "text": "Repeats a sentence louder rather than explaining it differently."
+    },
+    {
+      "id": 20,
+      "text": "Became an expert on the subject yesterday."
+    },
+    {
+      "id": 21,
+      "text": "“This mine!”"
+    },
+    {
+      "id": 22,
+      "text": "“I did it. I did it all by myself.”"
+    },
+    {
+      "id": 23,
+      "text": "“I'm not tired!”"
+    },
+    {
+      "id": 24,
+      "text": "“You're not my friend anymore.”"
+    },
+    {
+      "id": 25,
+      "text": "“He started it.”"
+    },
+    {
+      "id": 26,
+      "text": "“Mine was bigger.”"
+    },
+    {
+      "id": 27,
+      "text": "“No! I do it!”"
+    },
+    {
+      "id": 28,
+      "text": "“Watch me. Watch me. Watch me.”"
+    },
+    {
+      "id": 29,
+      "text": "“That's not fair!”"
+    },
+    {
+      "id": 30,
+      "text": "“Everybody says I'm the best at this.”"
+    },
+    {
+      "id": 31,
+      "text": "Wears diapers."
+    },
+    {
+      "id": 32,
+      "text": "Has tantrums."
+    },
+    {
+      "id": 33,
+      "text": "Cannot pronounce your name properly."
+    },
+    {
+      "id": 34,
+      "text": "Afraid of the vacuum cleaner."
+    },
+    {
+      "id": 35,
+      "text": "Needs help with buttons."
+    },
+    {
+      "id": 36,
+      "text": "Doesn't like sharing."
+    },
+    {
+      "id": 37,
+      "text": "Throws food."
+    },
+    {
+      "id": 38,
+      "text": "Requires a specific cup."
+    },
+    {
+      "id": 39,
+      "text": "Gets carried when tired."
+    },
+    {
+      "id": 40,
+      "text": "Needs constant supervision."
+    },
+    {
+      "id": 82,
+      "text": "Can drink a glass of water with one hand all by themself."
+    }
+  ]
+}
