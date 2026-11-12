@@ -47,3 +47,14 @@ CREATE TABLE IF NOT EXISTS rate_events (
 );
 
 CREATE INDEX IF NOT EXISTS idx_rate_events ON rate_events (bucket, created_at);
+
+-- People who asked to hear when the physical card deck can be ordered.
+-- `email` is stored lowercased and trimmed, so the UNIQUE constraint catches
+-- the same address typed twice. `consent` records which version of the notice
+-- on /copy they agreed to, and `created_at` when -- the proof of consent the
+-- GDPR asks for. Nothing else is kept: no name, no IP address.
+CREATE TABLE IF NOT EXISTS waitlist (
+  email      TEXT NOT NULL PRIMARY KEY,
+  consent    TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
