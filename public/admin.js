@@ -181,6 +181,73 @@ function fill(container, statements, kind, emptyText) {
   for (const statement of statements) container.append(row(statement, kind));
 }
 
+/* ------------------------------------------------------------------ *
+ * Waitlist
+ * ------------------------------------------------------------------ */
+
+let signups = [];
+
+function csvCell(value) {
+  const text = String(value ?? '');
+  // Quote everything, and neutralise a leading = + - @ so a spreadsheet does
+  // not run an "address" as a formula.
+  const safe = /^[=+\-@]/.test(text) ? `'${text}` : text;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
+function exportWaitlist() {
+  const lines = [['email', 'signed_up_utc', 'consent'], ...signups.map((s) => [s.email, s.created_at, s.consent])];
+  const csv = lines.map((line) => line.map(csvCell).join(',')).join('\r\n');
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  link.download = `waitlist-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+async function removeSignup(signup) {
+  if (!window.confirm(`Take ${signup.email} off the waitlist?`)) return;
+  try {
+    await api('/api/admin/waitlist', { method: 'POST', body: JSON.stringify({ email: signup.email }) });
+    say('');
+    await refreshWaitlist();
+  } catch (err) {
+    say(err.message, true);
+  }
+}
+
+async function refreshWaitlist() {
+  const data = await api('/api/admin/waitlist');
+  signups = data.signups;
+  document.getElementById('waitlist-count').textContent = String(data.count);
+
+  const container = document.getElementById('waitlist');
+  container.replaceChildren();
+  if (signups.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'meta';
+    empty.textContent = 'Nobody yet.';
+    container.append(empty);
+    return;
+  }
+  for (const signup of signups) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'row';
+    const body = document.createElement('p');
+    body.textContent = signup.email;
+    const meta = document.createElement('p');
+    meta.className = 'meta';
+    meta.textContent = `signed up ${signup.created_at} UTC`;
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    actions.append(actionButton('Remove', () => removeSignup(signup)));
+    wrapper.append(body, meta, actions);
+    container.append(wrapper);
+  }
+}
+
+document.getElementById('waitlist-export').addEventListener('click', exportWaitlist);
+
 async function refresh() {
   const data = await api('/api/admin/statements');
 
@@ -206,6 +273,12 @@ async function refresh() {
   });
   fill(lists.approved, byWorst, 'approved', 'No approved statements yet — import the seed file.');
   fill(lists.hidden, data.hidden, 'hidden', 'Nothing hidden.');
+
+  // A database that has not had migrations/002 run yet has no waitlist table;
+  // that should not take the moderation queue down with it.
+  await refreshWaitlist().catch((err) => {
+    document.getElementById('waitlist').textContent = `Could not load the waitlist: ${err.message}`;
+  });
 }
 
 /* ------------------------------------------------------------------ *

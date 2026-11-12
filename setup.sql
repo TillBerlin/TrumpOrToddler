@@ -3,6 +3,7 @@ CREATE INDEX IF NOT EXISTS idx_statements_status ON statements (status);
 CREATE TABLE IF NOT EXISTS votes ( statement_id INTEGER NOT NULL REFERENCES statements (id) ON DELETE CASCADE, player_id TEXT NOT NULL, choice TEXT NOT NULL CHECK (choice IN ('trump', 'toddler')), decision_ms INTEGER, rating TEXT CHECK (rating IS NULL OR rating IN ('funny', 'meh')), created_at TEXT NOT NULL DEFAULT (datetime('now')), PRIMARY KEY (statement_id, player_id) );
 CREATE TABLE IF NOT EXISTS rate_events ( bucket TEXT NOT NULL, created_at INTEGER NOT NULL );
 CREATE INDEX IF NOT EXISTS idx_rate_events ON rate_events (bucket, created_at);
+CREATE TABLE IF NOT EXISTS waitlist ( email TEXT NOT NULL PRIMARY KEY, consent TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')) );
 INSERT OR IGNORE INTO statements (text, norm_text, source_note, status) VALUES ('Refuses to wear a coat, no matter how cold it is.', 'refuses to wear a coat, no matter how cold it is', NULL, 'approved');
 INSERT OR IGNORE INTO statements (text, norm_text, source_note, status) VALUES ('Insists on pressing the elevator button themselves.', 'insists on pressing the elevator button themselves', NULL, 'approved');
 INSERT OR IGNORE INTO statements (text, norm_text, source_note, status) VALUES ('Gets upset when someone else''s tower is taller.', 'gets upset when someone else''s tower is taller', NULL, 'approved');

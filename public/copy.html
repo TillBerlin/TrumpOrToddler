@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Get a copy — Trump or Toddler</title>
+    <meta name="description" content="Trump or Toddler is becoming a card game. Leave your email and hear when you can order it." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>%F0%9F%A7%B8</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1><a href="/">Trump or Toddler</a></h1>
+    </header>
+
+    <main class="form-page">
+      <h2>Get a copy</h2>
+      <p class="lede">
+        Trump or Toddler is becoming a card game for the table: square cards with a statement on
+        each side, and a Trump/Toddler voting card for every player. Leave your email and we'll
+        tell you when you can order it.
+      </p>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" maxlength="254" required
+                 autocomplete="email" inputmode="email" placeholder="you@example.com" />
+        </div>
+
+        <!-- A trap for bots: hidden from people and from screen readers, so
+             anything typed here was not typed by a person. -->
+        <div class="trap" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label class="check">
+            <input type="checkbox" id="consent" name="consent" required />
+            <span>Email me once when the card game can be ordered.</span>
+          </label>
+          <p class="hint">
+            That one email is all we use your address for. It is never shared or sold, and it is
+            deleted once the launch email has gone out. Changed your mind?
+            <button type="button" class="link-button" id="remove">Take me off the list</button>.
+          </p>
+        </div>
+
+        <button type="submit" id="submit">Keep me posted</button>
+      </form>
+
+      <div id="message" class="message hidden" role="status"></div>
+    </main>
+
+    <footer class="site-footer">
+      <nav><a href="/">Back to the game</a></nav>
+      <p class="about">
+        We keep only your email address and the time you signed up, in this site's database at
+        Cloudflare, which hosts it. No tracking, no newsletter.
+      </p>
+    </footer>
+
+    <script type="module" src="/copy.js"></script>
+  </body>
+</html>

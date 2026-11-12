@@ -300,6 +300,7 @@ label {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"],
 textarea {
   width: 100%;
@@ -398,3 +399,22 @@ textarea {
 .site-footer a { text-underline-offset: 3px; }
 .site-footer .about { margin: 0; max-width: 32rem; margin-inline: auto; }
 .site-footer .count { margin: 0.7rem 0 0; font-variant-numeric: tabular-nums; opacity: 0.75; }
+
+/* ---------- get a copy ---------- */
+
+.check {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.check input { margin-top: 0.3rem; width: 1.05rem; height: 1.05rem; flex: none; }
+.form-page .hint .link-button { font-size: inherit; padding: 0; }
+
+/* The honeypot on /copy: off-screen rather than display:none, which some bots skip. */
+.trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+/* The quiet way in from the game. */
+.copy-link { font-weight: 600; }

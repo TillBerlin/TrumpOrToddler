@@ -30,6 +30,7 @@ plain HTML, CSS and ES modules.
 public/            what the browser gets
   index.html         the game
   submit.html        "add a statement" form
+  copy.html          "get a copy" waitlist for the card game
   admin.html         moderation queue
   lib/game.js        vote maths + which statement comes next (shared with tests)
 src/worker.js      routes /api/... to the handlers below
@@ -195,6 +196,14 @@ Run it **once**. SQLite has no `ADD COLUMN IF NOT EXISTS`, so a second run
 fails with "duplicate column name" — which is harmless, just confusing. A fresh
 database made from `setup.sql` already has the columns and needs nothing.
 
+## Adding the card-game waitlist to an existing database
+
+The "Get a copy" page needs one new table. In the same D1 console, paste
+[`migrations/002-add-waitlist.sql`](migrations/002-add-waitlist.sql) and select
+**Execute**. This one is safe to run twice. Until it has run, `/copy` answers
+"Something went wrong" and the admin page shows the waitlist as unavailable;
+the game itself is unaffected.
+
 ---
 
 ## Moderating
@@ -212,7 +221,24 @@ make the live one long and random.
   but keeps it (and its votes) so you can bring it back.
 - **Hidden** — statements you took down. *Show again* returns them to play.
 
+- **Card game waitlist** — everyone who left their email on `/copy` to hear
+  when the deck can be ordered, newest first. The count in the heading is the
+  demand signal. *Download as CSV* gives you the list for your mail tool;
+  *Remove* takes one address off (for example when somebody writes to ask).
+
 The token is kept in `sessionStorage`, so closing the tab forgets it.
+
+### The waitlist promise
+
+The `/copy` page tells people their address is used for **one** email, when
+the deck can be ordered, is never shared, and is **deleted once that email has
+gone out**. Keep that promise: after sending the launch email, delete the
+signups (`DELETE FROM waitlist;` in the D1 console). If you ever want to use
+the list for something else, change the wording on `/copy`, bump
+`CONSENT_VERSION` in `src/lib/email.js`, and only contact people who signed up
+under the new wording — that is what the `consent` column is for.
+
+The site sends no email itself; it only collects addresses.
 
 ---
 
@@ -371,6 +397,14 @@ Domains & Routes**. Free, and it works with domains registered elsewhere.
   by working through all of them — which is what `RATE_SALT` is for. Rows older
   than an hour are swept on the next write by anyone, so a one-time visitor's row
   does not outlive its purpose.
+
+- **Waitlist signups**, as `(email, which notice they agreed to, when)` — only
+  if somebody chooses to leave their address on `/copy`, and only after ticking
+  the consent box. No name and no IP address. Bots are turned away by a hidden
+  field, a minimum time to fill in the form and the same hashed-IP rate limit
+  (five tries an hour), and the form answers the same whether or not an
+  address was already on the list, so it cannot be used to check who signed up.
+  Anyone can take themselves off from the same page.
 
 No accounts, no analytics, no cookies, no third-party requests. Nothing
 counts visitors either: the vote total in the footer is added up from the

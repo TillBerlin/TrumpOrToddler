@@ -12,6 +12,8 @@ import { onRequestPost as postRate } from './api/rate.js';
 import { onRequestPost as postSubmit } from './api/submit.js';
 import { onRequestGet as getAdminStatements } from './api/admin/statements.js';
 import { onRequestPost as postAdminAction } from './api/admin/action.js';
+import { onRequestPost as postWaitlist } from './api/waitlist.js';
+import { onRequestGet as getAdminWaitlist, onRequestPost as postAdminWaitlist } from './api/admin/waitlist.js';
 import { error } from './lib/http.js';
 import { previewFor } from './lib/preview.js';
 import { parseSharedId } from '../public/lib/game.js';
@@ -23,6 +25,8 @@ const routes = {
   '/api/submit': { POST: postSubmit },
   '/api/admin/statements': { GET: getAdminStatements },
   '/api/admin/action': { POST: postAdminAction },
+  '/api/waitlist': { POST: postWaitlist },
+  '/api/admin/waitlist': { GET: getAdminWaitlist, POST: postAdminWaitlist },
 };
 
 /**
