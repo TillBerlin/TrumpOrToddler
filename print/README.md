@@ -20,3 +20,8 @@ back left blank for writing your own) and 10 voting cards (Trump / Toddler).
 Toddler tokens: `toddler-token.pdf` / `png/toddler-token.png`, made for
 BoardGamesMaker.com 25 mm chipboard circles (1/8 in bleed plus 1/8 in safe
 area, same image on both sides). 24 per sheet, 2 sheets per game.
+
+Peterprint.de version: `out/peterprint/`, 89 x 89 mm trim with exactly 3 mm
+bleed (95 x 95 mm pages), front/back alternating, no crop marks, saved as
+PDF/X-1a:2001 (FOGRA39 output intent, PDF 1.3). Same for the 25 mm token
+(31 x 31 mm page). Needs `pip install pikepdf`.

@@ -297,10 +297,10 @@ def faces(statements):
     return out
 
 
-def set_boxes(c, offset):
+def set_boxes(c, offset, bleed=REAL_BLEED, trim=REAL_TRIM):
     # TrimBox / BleedBox in page coordinates, read by every prepress tool.
-    t0, t1 = offset, offset + REAL_TRIM
-    b0, b1 = offset - REAL_BLEED, offset + REAL_TRIM + REAL_BLEED
+    t0, t1 = offset, offset + trim
+    b0, b1 = offset - bleed, offset + trim + bleed
     c.setTrimBox((t0, t0, t1, t1))
     c.setBleedBox((b0, b0, b1, b1))
     c.setArtBox((t0, t0, t1, t1))
@@ -319,18 +319,18 @@ def crop_marks(c, offset):
         c.line(offset + TRIM + gap, edge, offset + TRIM + gap + length, edge)
 
 
-def build_pdf(path, all_faces, marks):
-    margin = SLUG + REAL_BLEED if marks else REAL_BLEED
-    size = REAL_TRIM + 2 * margin
+def build_pdf(path, all_faces, marks, bleed=REAL_BLEED, trim=REAL_TRIM):
+    margin = SLUG + bleed if marks else bleed
+    size = trim + 2 * margin
     c = canvas.Canvas(path, pagesize=(size, size), initialFontName="Regular")
     c.setTitle("Trump or Toddler - cards")
     c.setAuthor("Trump or Toddler")
-    c.setSubject("89 x 89 mm (3.5 in) square cards, 1/8 in bleed, CMYK")
+    c.setSubject(f"{trim / mm:.1f} mm square cards, {bleed / mm:.2f} mm bleed, CMYK")
     for desc, draw in all_faces:
-        set_boxes(c, margin)
+        set_boxes(c, margin, bleed, trim)
         c.saveState()
         c.translate(margin, margin)
-        c.scale(K, K)
+        c.scale(trim / TRIM, trim / TRIM)
         draw(c)
         c.restoreState()
         if marks:
@@ -385,15 +385,15 @@ def draw_token(c, r):
     c.setLineCap(0)
 
 
-def build_tokens(path):
+def build_tokens(path, bleed=TOKEN_BLEED):
     """One page per token face (front and back the same), trim + bleed,
     TrimBox set to the square around the circle."""
-    size = TOKEN + 2 * TOKEN_BLEED
+    size = TOKEN + 2 * bleed
     c = canvas.Canvas(path, pagesize=(size, size), initialFontName="Regular")
     c.setTitle("Trump or Toddler - toddler tokens")
     c.setSubject("25 mm round tokens, 1/8 in bleed, CMYK")
     for _ in range(2):
-        c.setTrimBox((TOKEN_BLEED, TOKEN_BLEED, TOKEN_BLEED + TOKEN, TOKEN_BLEED + TOKEN))
+        c.setTrimBox((bleed, bleed, bleed + TOKEN, bleed + TOKEN))
         c.setBleedBox((0, 0, size, size))
         c.saveState()
         c.translate(size / 2, size / 2)
@@ -403,6 +403,49 @@ def build_tokens(path):
         c.restoreState()
         c.showPage()
     c.save()
+
+
+# ---------------------------------------------------------------- Peterprint
+PETER_BLEED = 3 * mm
+
+
+def make_pdfx1a(path):
+    """Mark a PDF as PDF/X-1a:2001 for FOGRA39 (ISO Coated v2) offset
+    printing. The content already qualifies: DeviceCMYK only, no
+    transparency, fonts embedded, TrimBox on every page."""
+    import pikepdf
+    from datetime import datetime, timezone
+    stamp = datetime.now(timezone.utc).strftime("D:%Y%m%d%H%M%SZ")
+    with pikepdf.open(path, allow_overwriting_input=True) as pdf:
+        pdf.Root.OutputIntents = pikepdf.Array([pikepdf.Dictionary(
+            Type=pikepdf.Name.OutputIntent,
+            S=pikepdf.Name.GTS_PDFX,
+            OutputConditionIdentifier=pikepdf.String("FOGRA39"),
+            OutputCondition=pikepdf.String("Coated FOGRA39 (ISO 12647-2:2004)"),
+            RegistryName=pikepdf.String("http://www.color.org"),
+            Info=pikepdf.String("Coated FOGRA39"),
+        )])
+        info = pdf.trailer.Info
+        info.GTS_PDFXVersion = pikepdf.String("PDF/X-1:2001")
+        info.GTS_PDFXConformance = pikepdf.String("PDF/X-1a:2001")
+        info.Trapped = pikepdf.Name.False_
+        info.CreationDate = pikepdf.String(stamp)
+        info.ModDate = pikepdf.String(stamp)
+        pdf.save(path, force_version="1.3", object_stream_mode=pikepdf.ObjectStreamMode.disable,
+                 static_id=False)
+
+
+def build_peterprint(all_faces):
+    """Peterprint.de Kartensets: 89 x 89 mm trim, exactly 3 mm bleed
+    (95 x 95 mm pages), front/back alternating, no crop marks, PDF/X-1a."""
+    folder = os.path.join(OUT, "peterprint")
+    os.makedirs(folder, exist_ok=True)
+    cards = os.path.join(folder, "trump-or-toddler-cards-peterprint.pdf")
+    tokens = os.path.join(folder, "toddler-token-peterprint.pdf")
+    build_pdf(cards, all_faces, marks=False, bleed=PETER_BLEED, trim=89 * mm)
+    build_tokens(tokens, bleed=PETER_BLEED)
+    for f in (cards, tokens):
+        make_pdfx1a(f)
 
 
 def write_text(statements):
@@ -450,6 +493,7 @@ def main():
     write_text(statements)
     export_png(os.path.join(OUT, "trump-or-toddler-cards.pdf"), all_faces)
     build_tokens(os.path.join(OUT, "toddler-token.pdf"))
+    build_peterprint(all_faces)
     if shutil.which("pdftoppm"):
         subprocess.run(["pdftoppm", "-r", "300", "-png", "-singlefile", "-f", "1", "-l", "1",
                         os.path.join(OUT, "toddler-token.pdf"),
