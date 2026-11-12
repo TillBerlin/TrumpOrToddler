@@ -61,8 +61,8 @@ def front(c, w, h):
     c.drawCentredString(w / 2, h / 2 - 4.6, "or")
     c.setFont("Medium", 6.5)
     c.setFillColor(WHITE)
-    c.setFont("SemiBold", 7.5)
-    c.drawCentredString(w / 2, SAFE + 1 * mm, "3–10 players   ·   18+   ·   10 min")
+    c.setFont("Black", 11)
+    c.drawCentredString(w / 2, SAFE + 1.2 * mm, "3–10 players  ·  18+  ·  10 min")
 
 
 def qr(c, x, y, size, url):
@@ -88,10 +88,18 @@ def back(c, w, h):
              "score a point.")
     y = build.paragraph(c, x, y, tw, [(blurb, "Regular")], 8.4, 10.8) - 1.5 * mm
     c.setFillColor(MUTED)
-    n_cards = len(build.pair_up(build.load_statements()))
-    y = build.paragraph(c, x, y, tw, [("3–10 players  ·  18+  ·  10 min", "SemiBold")], 6.8, 8.6)
-    build.paragraph(c, x, y + 0.6 * mm, tw, [(f"{n_cards} statement cards, 10 voting cards, 1 rules card",
-                                   "Medium")], 6.4, 8.2)
+    # the three facts people look for, big
+    y -= 9 * mm
+    facts = [("3–10", "players"), ("18+", "age"), ("10", "minutes")]
+    col = tw / 3
+    for i, (big, small) in enumerate(facts):
+        cx = x + col * i + col / 2
+        c.setFillColor(TRUMP if i % 2 == 0 else TODDLER)
+        c.setFont("Black", 20)
+        c.drawCentredString(cx, y, big)
+        c.setFillColor(MUTED)
+        c.setFont("SemiBold", 8.5)
+        c.drawCentredString(cx, y - 4.5 * mm, small)
     # QR block, bottom left, with a two-colour band below
     band = 4.5 * mm
     c.setFillColor(TRUMP)
