@@ -1,185 +1,297 @@
 {
-  "_readme": "Approved statements from the live game (/api/statements), pulled 2026-11-12. Edit this file and run `python3 print/build.py` to rebuild the print files.",
+  "_readme": "Approved statements for the print deck: the live game's statements plus the new ones Till approved in the 'Trump or Toddler statements' doc (2026-11-12). id is the web game id where it has one. Edit and run `python3 print/build.py`.",
   "statements": [
     {
       "id": 1,
       "text": "Refuses to wear a coat, no matter how cold it is."
     },
     {
-      "id": 2,
-      "text": "Insists on pressing the elevator button themselves."
-    },
-    {
-      "id": 3,
-      "text": "Gets upset when someone else's tower is taller."
-    },
-    {
-      "id": 4,
-      "text": "Everything is either “the best” or “a total disaster”."
-    },
-    {
-      "id": 5,
-      "text": "Needs a nap after lunch, but will deny being tired."
-    },
-    {
-      "id": 6,
-      "text": "Only eats food that is beige."
-    },
-    {
-      "id": 7,
-      "text": "Talks about themselves in the third person."
-    },
-    {
-      "id": 8,
-      "text": "Has to be the first one through the door."
-    },
-    {
-      "id": 9,
-      "text": "Announces the same achievement several times a day."
-    },
-    {
-      "id": 10,
-      "text": "Should not be left alone with a phone."
-    },
-    {
-      "id": 11,
-      "text": "Gets louder when asked to be quieter."
-    },
-    {
-      "id": 12,
-      "text": "Will not admit to knocking over the lamp."
-    },
-    {
-      "id": 13,
-      "text": "Deeply interested in large trucks."
-    },
-    {
-      "id": 14,
-      "text": "Would like a parade."
-    },
-    {
-      "id": 15,
-      "text": "Has a hairstyle that takes longer than the rest of getting dressed."
-    },
-    {
-      "id": 16,
-      "text": "Gives everyone they meet a nickname."
-    },
-    {
-      "id": 17,
-      "text": "Has fallen asleep somewhere they were supposed to be paying attention."
-    },
-    {
-      "id": 18,
-      "text": "Grabs things that belong to other people."
-    },
-    {
-      "id": 19,
-      "text": "Repeats a sentence louder rather than explaining it differently."
-    },
-    {
-      "id": 20,
-      "text": "Became an expert on the subject yesterday."
-    },
-    {
-      "id": 21,
-      "text": "“This mine!”"
-    },
-    {
-      "id": 22,
-      "text": "“I did it. I did it all by myself.”"
-    },
-    {
-      "id": 23,
-      "text": "“I'm not tired!”"
-    },
-    {
       "id": 24,
       "text": "“You're not my friend anymore.”"
+    },
+    {
+      "id": 2,
+      "text": "Insists on pressing the elevator button themselves."
     },
     {
       "id": 25,
       "text": "“He started it.”"
     },
     {
+      "id": 3,
+      "text": "Gets upset when someone else's tower is taller."
+    },
+    {
       "id": 26,
       "text": "“Mine was bigger.”"
+    },
+    {
+      "id": 4,
+      "text": "Everything is either “the best” or “a total disaster”."
     },
     {
       "id": 27,
       "text": "“No! I do it!”"
     },
     {
+      "id": 5,
+      "text": "Needs a nap after lunch, but will deny being tired."
+    },
+    {
       "id": 28,
       "text": "“Watch me. Watch me. Watch me.”"
+    },
+    {
+      "id": 6,
+      "text": "Only eats food that is beige."
     },
     {
       "id": 29,
       "text": "“That's not fair!”"
     },
     {
+      "id": 7,
+      "text": "Talks about themselves in the third person."
+    },
+    {
       "id": 30,
       "text": "“Everybody says I'm the best at this.”"
+    },
+    {
+      "id": 8,
+      "text": "Has to be the first one through the door."
     },
     {
       "id": 31,
       "text": "Wears diapers."
     },
     {
+      "id": 9,
+      "text": "Announces the same achievement several times a day."
+    },
+    {
       "id": 32,
       "text": "Has tantrums."
+    },
+    {
+      "id": 10,
+      "text": "Should not be left alone with a phone."
     },
     {
       "id": 33,
       "text": "Cannot pronounce your name properly."
     },
     {
+      "id": 11,
+      "text": "Gets louder when asked to be quieter."
+    },
+    {
       "id": 34,
       "text": "Afraid of the vacuum cleaner."
+    },
+    {
+      "id": 12,
+      "text": "Will not admit to knocking over the lamp."
     },
     {
       "id": 35,
       "text": "Needs help with buttons."
     },
     {
+      "id": 13,
+      "text": "Deeply interested in large trucks."
+    },
+    {
       "id": 36,
       "text": "Doesn't like sharing."
+    },
+    {
+      "id": 14,
+      "text": "Would like a parade."
     },
     {
       "id": 37,
       "text": "Throws food."
     },
     {
+      "id": 15,
+      "text": "Has a hairstyle that takes longer than the rest of getting dressed."
+    },
+    {
       "id": 38,
       "text": "Requires a specific cup."
+    },
+    {
+      "id": 16,
+      "text": "Gives everyone they meet a nickname."
     },
     {
       "id": 39,
       "text": "Gets carried when tired."
     },
     {
+      "id": 17,
+      "text": "Has fallen asleep somewhere they were supposed to be paying attention."
+    },
+    {
       "id": 40,
       "text": "Needs constant supervision."
+    },
+    {
+      "id": 18,
+      "text": "Grabs things that belong to other people."
     },
     {
       "id": 82,
       "text": "Can drink a glass of water with one hand all by themself."
     },
     {
+      "id": 19,
+      "text": "Repeats a sentence louder rather than explaining it differently."
+    },
+    {
       "id": 83,
       "text": "Knows almost all letters of the alphabet."
+    },
+    {
+      "id": 20,
+      "text": "Became an expert on the subject yesterday."
     },
     {
       "id": 84,
       "text": "Everyone is happy if they fall asleep early and sleep through the night."
     },
     {
+      "id": 21,
+      "text": "“This mine!”"
+    },
+    {
       "id": 85,
       "text": "Wants to be the biggest strongest person in every room."
     },
     {
+      "id": 22,
+      "text": "“I did it. I did it all by myself.”"
+    },
+    {
       "id": 86,
       "text": "Has tiny hands."
+    },
+    {
+      "id": 23,
+      "text": "“I'm not tired!”"
+    },
+    {
+      "id": null,
+      "text": "Thinks nobody can see them if they cover their eyes."
+    },
+    {
+      "id": null,
+      "text": "Needs to hold someone's hand going down the stairs."
+    },
+    {
+      "id": null,
+      "text": "Only looks at the pictures, never reads the words."
+    },
+    {
+      "id": null,
+      "text": "Has an imaginary friend who agrees with everything they say."
+    },
+    {
+      "id": null,
+      "text": "“Nobody knew health care could be so complicated.”"
+    },
+    {
+      "id": null,
+      "text": "Can count all the way to ten, perfectly."
+    },
+    {
+      "id": null,
+      "text": "Learned a new word today and uses it in every sentence."
+    },
+    {
+      "id": null,
+      "text": "Knows all the primary colors."
+    },
+    {
+      "id": null,
+      "text": "Can put on their own shoes."
+    },
+    {
+      "id": null,
+      "text": "Claps for themselves after doing something."
+    },
+    {
+      "id": null,
+      "text": "Does not like to eat vegetables."
+    },
+    {
+      "id": null,
+      "text": "Waves to everyone from the car window."
+    },
+    {
+      "id": null,
+      "text": "Signs their name extra big."
+    },
+    {
+      "id": null,
+      "text": "Wants their drawing hung up where everyone can see it."
+    },
+    {
+      "id": null,
+      "text": "Is learning to wait their turn."
+    },
+    {
+      "id": null,
+      "text": "Can almost tie their own shoelaces."
+    },
+    {
+      "id": null,
+      "text": "Is very proud of using the big toilet."
+    },
+    {
+      "id": null,
+      "text": "Tells everyone their age, rounded up."
+    },
+    {
+      "id": null,
+      "text": "Is learning to eat with a knife and fork."
+    },
+    {
+      "id": null,
+      "text": "Likes spinning around in the big chair."
+    },
+    {
+      "id": null,
+      "text": "Says “no” before hearing the question."
+    },
+    {
+      "id": null,
+      "text": "Builds a wall out of pillows and says nobody is allowed in."
+    },
+    {
+      "id": null,
+      "text": "Shouts at the TV."
+    },
+    {
+      "id": null,
+      "text": "Wants to be in charge of the remote control."
+    },
+    {
+      "id": null,
+      "text": "Wants the bigger piece of cake."
+    },
+    {
+      "id": null,
+      "text": "“Again! Again!”"
+    },
+    {
+      "id": null,
+      "text": "Wants two scoops of ice cream when everyone else gets one."
+    },
+    {
+      "id": null,
+      "text": "Wanted to buy the biggest island he could find."
     }
   ]
 }
