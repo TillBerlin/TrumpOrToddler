@@ -62,7 +62,7 @@ def front(c, w, h):
     c.setFont("Medium", 6.5)
     c.setFillColor(WHITE)
     c.setFont("Black", 11)
-    c.drawCentredString(w / 2, SAFE + 1.2 * mm, "3–10 players  ·  18+  ·  10 min")
+    c.drawCentredString(w / 2, SAFE + 1.2 * mm, "2–10 players  ·  18+  ·  10 min")
 
 
 def qr(c, x, y, size, url):
@@ -90,7 +90,7 @@ def back(c, w, h):
     c.setFillColor(MUTED)
     # the three facts people look for, big
     y -= 9 * mm
-    facts = [("3–10", "players"), ("18+", "age"), ("10", "minutes")]
+    facts = [("2–10", "players"), ("18+", "age"), ("10", "minutes")]
     col = tw / 3
     for i, (big, small) in enumerate(facts):
         cx = x + col * i + col / 2

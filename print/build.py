@@ -79,14 +79,15 @@ RULES_STEPS = [
     ("Score.", "Everyone who voted with the majority gets a point. "
                "A tie scores nothing."),
 ]
-RULES_SETUP = ("3 to 10 players. Everyone takes a voting card. Shuffle the "
+RULES_SETUP = ("2 to 10 players. Everyone takes a voting card. Shuffle the "
                "statement cards into a stack. The youngest player reads first.")
 RULES_NEXT = "Then the stack moves one player to the left, and they read next."
 WIN_TITLE = "Winning"
 WIN_TEXT = [
-    "The first player to reach 10 points wins. For a shorter game, play to 5.",
-    "Keep score on paper, or hand out coins, sweets or anything else small "
-    "as tokens.",
+    "The first player to reach 10 points wins. Keep score on paper, or with "
+    "coins or sweets.",
+    "Two players: play together. Read 10 cards and score a point each time "
+    "you vote the same. Get 5 points and you both win.",
     "Every card has a statement on both sides. When the stack runs out, "
     "turn it over and keep going.",
     "The blank side is yours: write your own statement on it.",
