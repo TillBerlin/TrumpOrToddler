@@ -14,7 +14,7 @@ Statements live in `statements.json` (pulled from the live game). Rules text is
 at the top of `build.py`. Fonts are Inter (SIL Open Font License, see
 `fonts/OFL.txt`), converted to TrueType so they can be embedded.
 
-The deck: 1 rules card, 21 statement cards (one statement per side, the last
+The deck: 1 rules card, statement cards (one statement per side, the last
 back left blank for writing your own) and 10 voting cards (Trump / Toddler).
 
 Toddler tokens: `toddler-token.pdf` / `png/toddler-token.png`, made for

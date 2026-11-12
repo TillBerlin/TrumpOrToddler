@@ -87,8 +87,9 @@ def back(c, w, h):
              "score a point.")
     y = build.paragraph(c, x, y, tw, [(blurb, "Regular")], 8.4, 10.8) - 1.5 * mm
     c.setFillColor(MUTED)
-    build.paragraph(c, x, y, tw, [("3–10 players  ·  21 statement cards, 10 voting cards, "
-                                   "1 rules card", "Medium")], 6.4, 8.2)
+    n_cards = len(build.pair_up(build.load_statements()))
+    build.paragraph(c, x, y, tw, [(f"3–10 players  ·  {n_cards} statement cards, 10 voting "
+                                   "cards, 1 rules card", "Medium")], 6.4, 8.2)
     # QR block, bottom left, with a two-colour band below
     band = 4.5 * mm
     c.setFillColor(TRUMP)
